@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class PersistableItemsContainer<T extends PersistableItem> {
+public abstract class PersistableItemsContainer<T extends PersistableItem>
+{
 
 	private List<T> elements;
 	private List<T> removedElements;
@@ -33,11 +34,11 @@ public abstract class PersistableItemsContainer<T extends PersistableItem> {
 	abstract void setContainerSyncState(SyncState syncState);
 
 	protected abstract void fireContainerChanged(SyncState oldState,
-			SyncState newState);
+	                                             SyncState newState);
 
 	/**
 	 * calculate the container's state, check if it is sync
-	 * 
+	 *
 	 * @return true, if the container's calculated state is sync
 	 */
 	protected abstract boolean checkContainerForSyncState();
@@ -45,10 +46,11 @@ public abstract class PersistableItemsContainer<T extends PersistableItem> {
 	/**
 	 * Resolve and initialize the appropriate elements from the underlying
 	 * QueryResult JsonObject.
-	 * 
+	 *
 	 * @return
 	 */
 	protected abstract List<T> resolveElements();
+
 	/**
 	 * @param elems
 	 * @param elem
@@ -59,30 +61,36 @@ public abstract class PersistableItemsContainer<T extends PersistableItem> {
 	/**
 	 * @return a list of all modified elements
 	 */
-	List<T> getModifiedElements() {
+	List<T> getModifiedElements()
+	{
 		List<T> ret = new ArrayList<T>();
-		if (this.elements != null) {
-			for (T elem : this.elements) {
+		if (this.elements != null)
+		{
+			for (T elem : this.elements)
+			{
 				if (elem.getSyncState() != SyncState.SYNC)
 					ret.add(elem);
 			}
 		}
-		
+
 		if (this.removedElements != null)
 			ret.addAll(this.removedElements);
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * @return an unmodifiable list of elements
 	 */
-	public List<T> getElements() {
-		if (this.elements == null) {
+	public List<T> getElements()
+	{
+		if (this.elements == null)
+		{
 			this.elements = resolveElements();
 			if (this.elementChangeListener == null)
 				this.elementChangeListener = new ElementChangeListener();
-			for (T elem : this.elements) {
+			for (T elem : this.elements)
+			{
 				elem.addChangeListener(this.elementChangeListener);
 			}
 		}
@@ -99,13 +107,16 @@ public abstract class PersistableItemsContainer<T extends PersistableItem> {
 
 	/**
 	 * add a new element, throw a RuntimeException if the element already exists
+	 *
 	 * @param element
 	 * @return the added element
 	 */
-	public T addElement(T element) {
+	public T addElement(T element)
+	{
 		// make sure that elements are initialized
 		getElements();
-		if (!containsElement(this.elements, element)) {
+		if (!containsElement(this.elements, element))
+		{
 			this.elements.add(element);
 			element.addChangeListener(this.elementChangeListener);
 			element.notifyState();
@@ -113,24 +124,30 @@ public abstract class PersistableItemsContainer<T extends PersistableItem> {
 		}
 		throw new RuntimeException(element.toString() + " already exists");
 	}
-	
-	public boolean checkForSyncState() {
+
+	public boolean checkForSyncState()
+	{
 		SyncState st = this.checkForElementStates(SyncState.SYNC);
 		if (st == null)
 			return this.removedElements == null || this.removedElements.isEmpty();
 		return false;
 	}
-	
+
 	/**
 	 * check all elements, if their state is one of the given states
+	 *
 	 * @param states to check against
 	 * @return null, if all elements have a state out of the requested states,
 	 * else return the first element state that differs
 	 */
-	private SyncState checkForElementStates(SyncState... states) {
-		if (this.elements != null) {
-			for (T elem : this.elements) {
-				for (SyncState state : states) {
+	private SyncState checkForElementStates(SyncState... states)
+	{
+		if (this.elements != null)
+		{
+			for (T elem : this.elements)
+			{
+				for (SyncState state : states)
+				{
 					if (elem.getSyncState() != state)
 						return elem.getSyncState();
 				}
@@ -138,41 +155,50 @@ public abstract class PersistableItemsContainer<T extends PersistableItem> {
 		}
 		return null;
 	}
-	
-	void setToSynchronized() {
+
+	void setToSynchronized()
+	{
 		this.removedElements = null;
-		if (this.elements != null) {
-			for (T item : this.elements) {
+		if (this.elements != null)
+		{
+			for (T item : this.elements)
+			{
 				item.setToSynchronized();
 			}
 		}
 	}
 
 	/********************************************/
-	private class ElementChangeListener implements ChangeListener {
+	private class ElementChangeListener implements ChangeListener
+	{
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public void changed(Object changedElement, SyncState oldState,
-				SyncState newState) {
+		                    SyncState newState)
+		{
 			if (newState == SyncState.REMOVED
-					|| newState == SyncState.NEW_REMOVED) {
+					|| newState == SyncState.NEW_REMOVED)
+			{
 				elements.remove(changedElement);
-				if (newState == SyncState.REMOVED) {
+				if (newState == SyncState.REMOVED)
+				{
 					if (removedElements == null)
 						removedElements = new ArrayList<T>();
-					if (!containsElement(removedElements, (T)changedElement))
+					if (!containsElement(removedElements, (T) changedElement))
 						removedElements.add((T) changedElement);
 				}
 			}
 
 			SyncState myOldContainerState = getContainerSyncState();
-			if (getContainerSyncState() == SyncState.SYNC) {
+			if (getContainerSyncState() == SyncState.SYNC)
+			{
 				if (newState != SyncState.SYNC)
 					setContainerSyncState(SyncState.CHANGED);
 				// possibly reverts the CHANGED state
 			} else if (getContainerSyncState() == SyncState.CHANGED
-					&& (newState == SyncState.NEW_REMOVED || newState == SyncState.SYNC)) {
+					&& (newState == SyncState.NEW_REMOVED || newState == SyncState.SYNC))
+			{
 				if (checkContainerForSyncState())
 					setContainerSyncState(SyncState.SYNC);
 			}

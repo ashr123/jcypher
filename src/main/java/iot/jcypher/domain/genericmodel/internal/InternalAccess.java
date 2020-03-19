@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,21 +21,25 @@ import iot.jcypher.domain.internal.DomainAccess;
 
 /**
  * For internal use only
- * @author wolfgang
  *
+ * @author wolfgang
  */
-public class InternalAccess {
+public class InternalAccess
+{
 
 	public static DomainModel createDomainModel(String domainName, String domainLabel,
-			DomainAccess domAccess) {
+	                                            DomainAccess domAccess)
+	{
 		return new DomainModel(domainName, domainLabel, domAccess);
 	}
-	
-	public static DomainAccess getDomainAccess(DomainModel dm) {
+
+	public static DomainAccess getDomainAccess(DomainModel dm)
+	{
 		return dm.getDomainAccess();
 	}
-	
-	public static void addDOTypeIfNeeded(DomainModel domainModel, DOType doType) {
+
+	public static void addDOTypeIfNeeded(DomainModel domainModel, DOType doType)
+	{
 		domainModel.addDOTypeIfNeeded(doType);
 	}
 }

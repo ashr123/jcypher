@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,16 +25,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DomainObject {
+public class DomainObject
+{
 
 	private DOType domainObjectType;
 	private Object rawObject;
 
-	public DomainObject(DOType doType) {
+	public DomainObject(DOType doType)
+	{
 		this(doType, true);
 	}
-	
-	DomainObject(DOType doType, boolean toNursery) {
+
+	DomainObject(DOType doType, boolean toNursery)
+	{
 		super();
 		if (doType == null)
 			throw new RuntimeException("a domain object must be constructed with a domain object type");
@@ -45,18 +48,22 @@ public class DomainObject {
 
 	/**
 	 * Answer the type of this generic domain object
+	 *
 	 * @return a DOType
 	 */
-	public DOType getDomainObjectType() {
+	public DOType getDomainObjectType()
+	{
 		return domainObjectType;
 	}
-	
+
 	/**
 	 * Set a field (attribute) value
+	 *
 	 * @param fieldName
 	 * @param value
 	 */
-	public void setFieldValue(String fieldName, Object value) {
+	public void setFieldValue(String fieldName, Object value)
+	{
 		DOField field = this.domainObjectType.getFieldByName(fieldName);
 		if (field == null)
 			throw new RuntimeException("field: " + fieldName + " not found in: " + this.domainObjectType.getName());
@@ -64,111 +71,131 @@ public class DomainObject {
 			throw new RuntimeException("field: " + fieldName + " is a list field, use list field accessors instead ");
 		Object val = value;
 		if (value instanceof DomainObject)
-			val = ((DomainObject)value).getRawObject();
+			val = ((DomainObject) value).getRawObject();
 		field.setValue(this.getRawObject(), val);
 	}
-	
+
 	/**
 	 * Add a value to a list or array field
+	 *
 	 * @param fieldName
 	 * @param value
 	 */
-	public void addListFieldValue(String fieldName, Object value) {
+	public void addListFieldValue(String fieldName, Object value)
+	{
 		Object val = value;
 		if (value instanceof DomainObject)
-			val = ((DomainObject)value).getRawObject();
+			val = ((DomainObject) value).getRawObject();
 		Object lst = getFieldValue(fieldName, true); // internal
-		
+
 		DOField fld = getDomainObjectType().getFieldByName(fieldName);
 		String ctn = fld.getComponentTypeName();
 		Class<?> clazz;
-		try {
+		try
+		{
 			clazz = getDomainObjectType().getDomainModel().getClassForName(ctn);
 			if (!clazz.isAssignableFrom(val.getClass()))
 				throw new RuntimeException("value must be of type or subtype of: [" + clazz.getName() + "]");
 			lst = tryInitListOrArray(lst, fld, clazz);
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e)
+		{
 			throw new RuntimeException(e);
 		}
-		
-		if (lst instanceof List<?>) {
+
+		if (lst instanceof List<?>)
+		{
 			@SuppressWarnings("unchecked")
-			List<Object> list = (List<Object>)lst;
+			List<Object> list = (List<Object>) lst;
 			list.add(val);
-		} else if (lst != null && lst.getClass().isArray()) {
+		} else if (lst != null && lst.getClass().isArray())
+		{
 			int len = Array.getLength(lst);
 			Object array = Array.newInstance(clazz, len + 1);
-			for (int i = 0; i < len; i++) {
+			for (int i = 0; i < len; i++)
+			{
 				Array.set(array, i, Array.get(lst, i));
 			}
 			Array.set(array, len, val);
-		} else {
+		} else
+		{
 			if (!getDomainObjectType().getFieldByName(fieldName).isListOrArray())
 				throw new RuntimeException("field: [" + fieldName + "] is neither list nor array");
 			if (lst == null)
 				throw new RuntimeException("field: [" + fieldName + "] has not been initialized as list or array");
 		}
 	}
-	
+
 	/**
 	 * Add a value to a list or array field at the given index.
 	 * <br/>Shifts the element currently at that position
-     * (if any) and any subsequent elements to the right (adds one to their
-     * indices).
+	 * (if any) and any subsequent elements to the right (adds one to their
+	 * indices).
+	 *
 	 * @param fieldName
 	 * @param index
 	 * @param value
 	 */
-	public void insertListFieldValue(String fieldName, int index, Object value) {
+	public void insertListFieldValue(String fieldName, int index, Object value)
+	{
 		Object val = value;
 		if (value instanceof DomainObject)
-			val = ((DomainObject)value).getRawObject();
+			val = ((DomainObject) value).getRawObject();
 		Object lst = getFieldValue(fieldName, true); // internal
-		
+
 		DOField fld = getDomainObjectType().getFieldByName(fieldName);
 		String ctn = fld.getComponentTypeName();
 		Class<?> clazz;
-		try {
+		try
+		{
 			clazz = getDomainObjectType().getDomainModel().getClassForName(ctn);
 			if (!clazz.isAssignableFrom(val.getClass()))
 				throw new RuntimeException("value must be of type or subtype of: [" + clazz.getName() + "]");
 			lst = tryInitListOrArray(lst, fld, clazz);
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e)
+		{
 			throw new RuntimeException(e);
 		}
-		
-		if (lst instanceof List<?>) {
+
+		if (lst instanceof List<?>)
+		{
 			@SuppressWarnings("unchecked")
-			List<Object> list = (List<Object>)lst;
+			List<Object> list = (List<Object>) lst;
 			list.add(index, val);
-		} else if (lst != null && lst.getClass().isArray()) {
+		} else if (lst != null && lst.getClass().isArray())
+		{
 			int len = Array.getLength(lst);
 			Object array = Array.newInstance(clazz, len + 1);
-			for (int i = 0; i < index; i++) {
+			for (int i = 0; i < index; i++)
+			{
 				Array.set(array, i, Array.get(lst, i));
 			}
 			Array.set(array, index, val);
-			for (int i = index + 1; i < len + 1; i++) {
+			for (int i = index + 1; i < len + 1; i++)
+			{
 				Array.set(array, i, Array.get(lst, i - 1));
 			}
-		} else {
+		} else
+		{
 			if (!getDomainObjectType().getFieldByName(fieldName).isListOrArray())
 				throw new RuntimeException("field: [" + fieldName + "] is neither list nor array");
 			if (lst == null)
 				throw new RuntimeException("field: [" + fieldName + "] has not been initialized as list or array");
 		}
 	}
-	
+
 	/**
 	 * Get a field (attribute) value
+	 *
 	 * @param fieldName
 	 * @return
 	 */
-	public Object getFieldValue(String fieldName) {
+	public Object getFieldValue(String fieldName)
+	{
 		return getFieldValue(fieldName, false); // not internal
 	}
-	
-	Object getFieldValue(String fieldName, boolean internal) {
+
+	Object getFieldValue(String fieldName, boolean internal)
+	{
 		DOField field = this.domainObjectType.getFieldByName(fieldName);
 		if (field == null)
 			throw new RuntimeException("field: " + fieldName + " not found in: " + this.domainObjectType.getName());
@@ -180,32 +207,37 @@ public class DomainObject {
 			return gdo;
 		return raw;
 	}
-	
+
 	/**
 	 * if the field is a list or array, answer the value at the given index.
+	 *
 	 * @param fieldName
 	 * @param index
 	 * @return
 	 */
-	public Object getListFieldValue(String fieldName, int index) {
+	public Object getListFieldValue(String fieldName, int index)
+	{
 		Object ret = null;
 		Object val = getFieldValue(fieldName, true); // internal
-		if (val instanceof List<?>) {
-			List<?> list = (List<?>)val;
+		if (val instanceof List<?>)
+		{
+			List<?> list = (List<?>) val;
 			Object cval = list.get(index);
 			DomainObject gdo = getForRawObject(cval);
 			if (gdo != null)
 				ret = gdo;
 			else
 				ret = cval;
-		} else if (val != null && val.getClass().isArray()) {
+		} else if (val != null && val.getClass().isArray())
+		{
 			Object aval = Array.get(val, index);
 			DomainObject gdo = getForRawObject(aval);
 			if (gdo != null)
 				ret = gdo;
 			else
 				ret = aval;
-		} else {
+		} else
+		{
 			if (!getDomainObjectType().getFieldByName(fieldName).isListOrArray())
 				throw new RuntimeException("field: [" + fieldName + "] is neither list nor array");
 			if (val == null)
@@ -213,39 +245,48 @@ public class DomainObject {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Returns the index of the first occurrence of the specified value
-     * in the list field, or -1 if the list field does not contain the value.
+	 * in the list field, or -1 if the list field does not contain the value.
+	 *
 	 * @param fieldName
 	 * @param value
 	 * @return
 	 */
-	public int getIndexOfValue(String fieldName, Object value) {
+	public int getIndexOfValue(String fieldName, Object value)
+	{
 		int ret = -1;
 		Object val = value;
 		if (value instanceof DomainObject)
-			val = ((DomainObject)value).getRawObject();
+			val = ((DomainObject) value).getRawObject();
 		Object lst = getFieldValue(fieldName, true); // internal
-		if (lst instanceof List<?>) {
-			List<?> list = (List<?>)lst;
-			for (int i = 0; i < list.size(); i++) {
+		if (lst instanceof List<?>)
+		{
+			List<?> list = (List<?>) lst;
+			for (int i = 0; i < list.size(); i++)
+			{
 				Object obj = list.get(i);
-				if (obj.equals(val)) {
+				if (obj.equals(val))
+				{
 					ret = i;
 					break;
 				}
 			}
-		} else if (lst != null && lst.getClass().isArray()) {
+		} else if (lst != null && lst.getClass().isArray())
+		{
 			int len = Array.getLength(lst);
-			for (int i = 0; i < len; i++) {
+			for (int i = 0; i < len; i++)
+			{
 				Object obj = Array.get(lst, i);
-				if (obj.equals(val)) {
+				if (obj.equals(val))
+				{
 					ret = i;
 					break;
 				}
 			}
-		} else {
+		} else
+		{
 			if (!getDomainObjectType().getFieldByName(fieldName).isListOrArray())
 				throw new RuntimeException("field: [" + fieldName + "] is neither list nor array");
 			if (lst == null)
@@ -253,83 +294,101 @@ public class DomainObject {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Removes all of the elements from the list field.
+	 *
 	 * @param fieldName
 	 */
-	public void clearListField(String fieldName) {
+	public void clearListField(String fieldName)
+	{
 		Object val = getFieldValue(fieldName, true); // internal
 		if (val instanceof List<?>)
-			((List<?>)val).clear();
-		else if (val != null && val.getClass().isArray()) {
+			((List<?>) val).clear();
+		else if (val != null && val.getClass().isArray())
+		{
 			DOField fld = getDomainObjectType().getFieldByName(fieldName);
 			String ctn = fld.getComponentTypeName();
 			Class<?> clazz;
-			try {
+			try
+			{
 				clazz = getDomainObjectType().getDomainModel().getClassForName(ctn);
 				tryInitListOrArray(null, fld, clazz);
-			} catch (ClassNotFoundException e) {
+			} catch (ClassNotFoundException e)
+			{
 				throw new RuntimeException(e);
 			}
-		} else {
+		} else
+		{
 			if (!getDomainObjectType().getFieldByName(fieldName).isListOrArray())
 				throw new RuntimeException("field: [" + fieldName + "] is neither list nor array");
 			if (val == null)
 				throw new RuntimeException("list or array field: [" + fieldName + "] is null");
 		}
 	}
-	
+
 	/**
 	 * Remove a value from a list at the given index.
 	 * <br/>Shifts any subsequent elements to the left (subtracts one from their indices).
+	 *
 	 * @param fieldName
 	 * @param index
 	 */
-	public void removeListFieldValue(String fieldName, int index) {
+	public void removeListFieldValue(String fieldName, int index)
+	{
 		Object val = getFieldValue(fieldName, true); // internal
-		
+
 		DOField fld = getDomainObjectType().getFieldByName(fieldName);
 		String ctn = fld.getComponentTypeName();
 		Class<?> clazz;
-		try {
+		try
+		{
 			clazz = getDomainObjectType().getDomainModel().getClassForName(ctn);
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e)
+		{
 			throw new RuntimeException(e);
 		}
-		
+
 		if (val instanceof List<?>)
-			((List<?>)val).remove(index);
-		else if (val != null && val.getClass().isArray()) {
+			((List<?>) val).remove(index);
+		else if (val != null && val.getClass().isArray())
+		{
 			int len = Array.getLength(val);
 			Object array = Array.newInstance(clazz, len - 1);
-			for (int i = 0; i < index; i++) {
+			for (int i = 0; i < index; i++)
+			{
 				Array.set(array, i, Array.get(val, i));
 			}
-			for (int i = index; i < len - 1; i++) {
+			for (int i = index; i < len - 1; i++)
+			{
 				Array.set(array, i, Array.get(val, i - 1));
 			}
-		} else {
+		} else
+		{
 			if (!getDomainObjectType().getFieldByName(fieldName).isListOrArray())
 				throw new RuntimeException("field: [" + fieldName + "] is neither list nor array");
 			if (val == null)
 				throw new RuntimeException("list or array field: [" + fieldName + "] is null");
 		}
 	}
-	
+
 	/**
 	 * Answer the length of a list field
+	 *
 	 * @param fieldName
 	 * @return
 	 */
-	public int getListFieldLength(String fieldName) {
+	public int getListFieldLength(String fieldName)
+	{
 		int ret = -1;
 		Object val = getFieldValue(fieldName, true); // internal
 		if (val instanceof List<?>)
-			ret = ((List<?>)val).size();
-		else if (val != null && val.getClass().isArray()) {
+			ret = ((List<?>) val).size();
+		else if (val != null && val.getClass().isArray())
+		{
 			ret = Array.getLength(val);
-		} else {
+		} else
+		{
 			if (!getDomainObjectType().getFieldByName(fieldName).isListOrArray())
 				throw new RuntimeException("field: [" + fieldName + "] is neither list nor array");
 			if (val == null)
@@ -337,11 +396,14 @@ public class DomainObject {
 		}
 		return ret;
 	}
-	
-	private Object tryInitListOrArray(Object list, DOField fld, Class<?> componentType) throws ClassNotFoundException {
+
+	private Object tryInitListOrArray(Object list, DOField fld, Class<?> componentType) throws ClassNotFoundException
+	{
 		Object ret = list;
-		if (list == null) { // try to initialize list or array field with empty list / array
-			if (fld.isBuidInType()) {
+		if (list == null)
+		{ // try to initialize list or array field with empty list / array
+			if (fld.isBuidInType())
+			{
 				Class<?> lstClazz = getDomainObjectType().getDomainModel().getClassForName(fld.getTypeName());
 				if (List.class.isAssignableFrom(lstClazz))
 					ret = new ArrayList<Object>();
@@ -353,32 +415,39 @@ public class DomainObject {
 		}
 		return ret;
 	}
-	
-	private DomainObject getForRawObject(Object raw) {
+
+	private DomainObject getForRawObject(Object raw)
+	{
 		DomainObject gdo = null;
-		if (raw != null) {
+		if (raw != null)
+		{
 			DomainAccess da = InternalAccess.getDomainAccess(this.domainObjectType.getDomainModel());
-			gdo = ((IIntDomainAccess)da).getInternalDomainAccess().getGenericDomainObject(raw);
+			gdo = ((IIntDomainAccess) da).getInternalDomainAccess().getGenericDomainObject(raw);
 			if (gdo == null)
 				gdo = this.domainObjectType.getDomainModel().getNurseryObject(raw);
 		}
 		return gdo;
 	}
 
-	void setRawObject(Object rawObject) {
-		this.rawObject = rawObject;
-	}
-	
-	Object getRawObject() {
-		if (this.rawObject == null) {
-			try {
+	Object getRawObject()
+	{
+		if (this.rawObject == null)
+		{
+			try
+			{
 				this.rawObject = this.domainObjectType.getRawType().newInstance();
 			} catch (InstantiationException | IllegalAccessException
-					| ClassNotFoundException e) {
+					| ClassNotFoundException e)
+			{
 				throw new RuntimeException(e);
 			}
 		}
 		return this.rawObject;
 	}
-	
+
+	void setRawObject(Object rawObject)
+	{
+		this.rawObject = rawObject;
+	}
+
 }

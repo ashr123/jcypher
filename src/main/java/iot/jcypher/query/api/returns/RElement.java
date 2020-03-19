@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +20,14 @@ import iot.jcypher.query.api.APIObject;
 import iot.jcypher.query.ast.returns.ReturnExpression;
 import iot.jcypher.query.values.JcValue;
 
-public class RElement<T extends RElement<?>> extends APIObject implements IRElement {
+public class RElement<T extends RElement<?>> extends APIObject implements IRElement
+{
 
 	private T connector;
-	
+
 	@SuppressWarnings("unchecked")
-	RElement(ReturnExpression rx) {
+	RElement(ReturnExpression rx)
+	{
 		super();
 		this.astNode = rx;
 		this.connector = (T) this;
@@ -38,7 +40,8 @@ public class RElement<T extends RElement<?>> extends APIObject implements IRElem
 	 * <br/>RETURN.element(n.property("name")).<b>AS(personName)</b></i></div>
 	 * <br/>
 	 */
-	public T AS(JcValue alias) {
+	public T AS(JcValue alias)
+	{
 		getReturnExpression().setAlias(alias);
 		return this.connector;
 	}
@@ -49,7 +52,8 @@ public class RElement<T extends RElement<?>> extends APIObject implements IRElem
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. RETURN.resultOf(p.nodes()).<b>LIMIT(3)</b></i></div>
 	 * <br/>
 	 */
-	public RElement<T> LIMIT(int num) {
+	public RElement<T> LIMIT(int num)
+	{
 		getReturnExpression().setLimit(num);
 		return this;
 	}
@@ -60,16 +64,19 @@ public class RElement<T extends RElement<?>> extends APIObject implements IRElem
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. RETURN.resultOf(p.nodes()).<b>SKIP(2)</b></i></div>
 	 * <br/>
 	 */
-	public RElement<T> SKIP(int num) {
+	public RElement<T> SKIP(int num)
+	{
 		getReturnExpression().setSkip(num);
 		return this;
 	}
-	
-	protected ReturnExpression getReturnExpression() {
-		return (ReturnExpression)this.astNode;
+
+	protected ReturnExpression getReturnExpression()
+	{
+		return (ReturnExpression) this.astNode;
 	}
 
-	void setConnector(T connector) {
+	void setConnector(T connector)
+	{
 		this.connector = connector;
 	}
 }

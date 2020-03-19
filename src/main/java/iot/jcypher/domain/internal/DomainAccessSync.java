@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2016 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,6 @@
  ************************************************************************/
 
 package iot.jcypher.domain.internal;
-
-import java.util.List;
 
 import iot.jcypher.concurrency.Locking;
 import iot.jcypher.database.IDBAccess;
@@ -35,19 +33,23 @@ import iot.jcypher.domainquery.QueryPersistor;
 import iot.jcypher.query.result.JcError;
 import iot.jcypher.transaction.ITransaction;
 
-public class DomainAccessSync implements IDomainAccess, IIntDomainAccess {
+import java.util.List;
+
+public class DomainAccessSync implements IDomainAccess, IIntDomainAccess
+{
 
 	private SyncType syncType;
 	private DomainAccess delegate;
 	private GenericDomainAccessSync genericDomainAccess;
-	
+
 	/**
-	 * @param dbAccess the graph database connection
+	 * @param dbAccess       the graph database connection
 	 * @param domainName
 	 * @param domainLabelUse
 	 */
 	DomainAccessSync(IDBAccess dbAccess, String domainName, DomainLabelUse domainLabelUse,
-			SyncType st) {
+	                 SyncType st)
+	{
 		super();
 		this.syncType = st;
 		this.delegate = new DomainAccess(dbAccess, domainName, domainLabelUse);
@@ -55,199 +57,237 @@ public class DomainAccessSync implements IDomainAccess, IIntDomainAccess {
 	}
 
 	@Override
-	public synchronized List<SyncInfo> getSyncInfos(List<Object> domainObjects) {
+	public synchronized List<SyncInfo> getSyncInfos(List<Object> domainObjects)
+	{
 		return getDelegate().getSyncInfos(domainObjects);
 	}
 
 	@Override
-	public synchronized SyncInfo getSyncInfo(Object domainObject) {
+	public synchronized SyncInfo getSyncInfo(Object domainObject)
+	{
 		return getDelegate().getSyncInfo(domainObject);
 	}
 
 	@Override
-	public synchronized <T> List<T> loadByIds(Class<T> domainObjectClass, int resolutionDepth, long... ids) {
+	public synchronized <T> List<T> loadByIds(Class<T> domainObjectClass, int resolutionDepth, long... ids)
+	{
 		return getDelegate().loadByIds(domainObjectClass, resolutionDepth, ids);
 	}
 
 	@Override
-	public synchronized <T> T loadById(Class<T> domainObjectClass, int resolutionDepth, long id) {
+	public synchronized <T> T loadById(Class<T> domainObjectClass, int resolutionDepth, long id)
+	{
 		return getDelegate().loadById(domainObjectClass, resolutionDepth, id);
 	}
 
 	@Override
-	public synchronized <T> List<T> loadByType(Class<T> domainObjectClass, int resolutionDepth, int offset, int count) {
+	public synchronized <T> List<T> loadByType(Class<T> domainObjectClass, int resolutionDepth, int offset, int count)
+	{
 		return getDelegate().loadByType(domainObjectClass, resolutionDepth, offset, count);
 	}
 
 	@Override
-	public synchronized List<JcError> store(List<?> domainObjects) {
+	public synchronized List<JcError> store(List<?> domainObjects)
+	{
 		return getDelegate().store(domainObjects);
 	}
 
 	@Override
-	public synchronized List<JcError> store(Object domainObject) {
+	public synchronized List<JcError> store(Object domainObject)
+	{
 		return getDelegate().store(domainObject);
 	}
 
 	@Override
-	public synchronized long numberOfInstancesOf(Class<?> type) {
+	public synchronized long numberOfInstancesOf(Class<?> type)
+	{
 		return getDelegate().numberOfInstancesOf(type);
 	}
 
 	@Override
-	public synchronized List<Long> numberOfInstancesOf(List<Class<?>> types) {
+	public synchronized List<Long> numberOfInstancesOf(List<Class<?>> types)
+	{
 		return getDelegate().numberOfInstancesOf(types);
 	}
 
 	@Override
-	public DomainQuery createQuery() {
+	public DomainQuery createQuery()
+	{
 		return getDelegate().createQuery();
 	}
 
 	@Override
-	public List<String> getStoredQueryNames() {
+	public List<String> getStoredQueryNames()
+	{
 		return getDelegate().getStoredQueryNames();
 	}
 
 	@Override
-	public QueryPersistor createQueryPersistor(DomainQuery query) {
+	public QueryPersistor createQueryPersistor(DomainQuery query)
+	{
 		return getDelegate().createQueryPersistor(query);
 	}
 
 	@Override
-	public QueryLoader<DomainQuery> createQueryLoader(String queryName) {
+	public QueryLoader<DomainQuery> createQueryLoader(String queryName)
+	{
 		return getDelegate().createQueryLoader(queryName);
 	}
 
 	@Override
-	public synchronized ITransaction beginTX() {
+	public synchronized ITransaction beginTX()
+	{
 		return getDelegate().beginTX();
 	}
 
 	@Override
-	public IDomainAccess setLockingStrategy(Locking locking) {
+	public IDomainAccess setLockingStrategy(Locking locking)
+	{
 		getDelegate().setLockingStrategy(locking);
 		return this;
 	}
 
 	@Override
-	public IGenericDomainAccess getGenericDomainAccess() {
+	public IGenericDomainAccess getGenericDomainAccess()
+	{
 		if (this.genericDomainAccess == null)
 			this.genericDomainAccess = new GenericDomainAccessSync();
 		return this.genericDomainAccess;
 	}
 
 	@Override
-	public InternalDomainAccess getInternalDomainAccess() {
+	public InternalDomainAccess getInternalDomainAccess()
+	{
 		InternalDomainAccess ret = getDelegate().getInternalDomainAccess();
 		ret.setSyncObject(this);
 		return ret;
 	}
 
-	private DomainAccess getDelegate() {
+	private DomainAccess getDelegate()
+	{
 		return this.delegate;
 	}
-	
+
 	/**********************************************************************/
-	public class GenericDomainAccessSync implements IGenericDomainAccess, IIntDomainAccess {
+	public class GenericDomainAccessSync implements IGenericDomainAccess, IIntDomainAccess
+	{
 
 		@Override
-		public synchronized List<SyncInfo> getSyncInfos(List<DomainObject> domainObjects) {
+		public synchronized List<SyncInfo> getSyncInfos(List<DomainObject> domainObjects)
+		{
 			return getDelegate().getGenericDomainAccess().getSyncInfos(domainObjects);
 		}
 
 		@Override
-		public synchronized SyncInfo getSyncInfo(DomainObject domainObject) {
+		public synchronized SyncInfo getSyncInfo(DomainObject domainObject)
+		{
 			return getDelegate().getGenericDomainAccess().getSyncInfo(domainObject);
 		}
 
 		@Override
-		public synchronized List<JcError> store(DomainObject domainObject) {
+		public synchronized List<JcError> store(DomainObject domainObject)
+		{
 			return getDelegate().getGenericDomainAccess().store(domainObject);
 		}
 
 		@Override
-		public synchronized List<JcError> store(List<DomainObject> domainObjects) {
+		public synchronized List<JcError> store(List<DomainObject> domainObjects)
+		{
 			return getDelegate().getGenericDomainAccess().store(domainObjects);
 		}
 
 		@Override
-		public synchronized List<DomainObject> loadByIds(String domainObjectClassName, int resolutionDepth, long... ids) {
+		public synchronized List<DomainObject> loadByIds(String domainObjectClassName, int resolutionDepth, long... ids)
+		{
 			return getDelegate().getGenericDomainAccess().loadByIds(domainObjectClassName, resolutionDepth, ids);
 		}
 
 		@Override
-		public synchronized DomainObject loadById(String domainObjectClassName, int resolutionDepth, long id) {
+		public synchronized DomainObject loadById(String domainObjectClassName, int resolutionDepth, long id)
+		{
 			return getDelegate().getGenericDomainAccess().loadById(domainObjectClassName, resolutionDepth, id);
 		}
 
 		@Override
-		public synchronized List<DomainObject> loadByType(String domainObjectClassName, int resolutionDepth, int offset, int count) {
+		public synchronized List<DomainObject> loadByType(String domainObjectClassName, int resolutionDepth, int offset, int count)
+		{
 			return getDelegate().getGenericDomainAccess().loadByType(domainObjectClassName, resolutionDepth, offset, count);
 		}
 
 		@Override
-		public synchronized long numberOfInstancesOf(String typeName) {
+		public synchronized long numberOfInstancesOf(String typeName)
+		{
 			return getDelegate().getGenericDomainAccess().numberOfInstancesOf(typeName);
 		}
 
 		@Override
-		public synchronized List<Long> numberOfInstancesOf(List<String> typeNames) {
+		public synchronized List<Long> numberOfInstancesOf(List<String> typeNames)
+		{
 			return getDelegate().getGenericDomainAccess().numberOfInstancesOf(typeNames);
 		}
 
 		@Override
-		public GDomainQuery createQuery() {
+		public GDomainQuery createQuery()
+		{
 			return getDelegate().getGenericDomainAccess().createQuery();
 		}
 
 		@Override
-		public List<String> getStoredQueryNames() {
+		public List<String> getStoredQueryNames()
+		{
 			return getDelegate().getStoredQueryNames();
 		}
 
 		@Override
-		public QueryPersistor createQueryPersistor(GDomainQuery query) {
+		public QueryPersistor createQueryPersistor(GDomainQuery query)
+		{
 			return getDelegate().getGenericDomainAccess().createQueryPersistor(query);
 		}
 
 		@Override
-		public QueryLoader<GDomainQuery> createQueryLoader(String queryName) {
+		public QueryLoader<GDomainQuery> createQueryLoader(String queryName)
+		{
 			return getDelegate().getGenericDomainAccess().createQueryLoader(queryName);
 		}
 
 		@Override
-		public synchronized ITransaction beginTX() {
+		public synchronized ITransaction beginTX()
+		{
 			return getDelegate().getGenericDomainAccess().beginTX();
 		}
 
 		@Override
-		public IGenericDomainAccess setLockingStrategy(Locking locking) {
+		public IGenericDomainAccess setLockingStrategy(Locking locking)
+		{
 			getDelegate().getGenericDomainAccess().setLockingStrategy(locking);
 			return this;
 		}
 
 		@Override
-		public DOTypeBuilderFactory getTypeBuilderFactory() {
+		public DOTypeBuilderFactory getTypeBuilderFactory()
+		{
 			return getDelegate().getGenericDomainAccess().getTypeBuilderFactory();
 		}
 
 		@Override
-		public synchronized DOType getDomainObjectType(String typeName) {
+		public synchronized DOType getDomainObjectType(String typeName)
+		{
 			return getDelegate().getGenericDomainAccess().getDomainObjectType(typeName);
 		}
 
 		@Override
-		public IDomainAccess getDomainAccess() {
+		public IDomainAccess getDomainAccess()
+		{
 			return DomainAccessSync.this;
 		}
 
 		@Override
-		public InternalDomainAccess getInternalDomainAccess() {
+		public InternalDomainAccess getInternalDomainAccess()
+		{
 			InternalDomainAccess ret = getDelegate().getInternalDomainAccess();
 			ret.setSyncObject(this);
 			return ret;
 		}
-		
+
 	}
 }

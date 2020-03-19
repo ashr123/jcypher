@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,42 +20,50 @@ import iot.jcypher.graph.GrNode;
 
 import java.util.Iterator;
 
-public abstract class ObjectMapping {
+public abstract class ObjectMapping
+{
 
 	private NodeLabelMapping nodeLabelMapping;
-	
-	public void mapPropertiesFromObject(Object domainObject, GrNode rNode) {
+
+	public void mapPropertiesFromObject(Object domainObject, GrNode rNode)
+	{
 		if (this.nodeLabelMapping != null)
 			this.nodeLabelMapping.mapLabel(domainObject, rNode);
-			
+
 		Iterator<FieldMapping> it = fieldMappingsIterator();
-		while(it.hasNext()) {
+		while (it.hasNext())
+		{
 			FieldMapping fm = it.next();
 			fm.mapPropertyFromField(domainObject, rNode);
 		}
 	}
-	
-	public void mapPropertiesToObject(Object domainObject, GrNode rNode) {
+
+	public void mapPropertiesToObject(Object domainObject, GrNode rNode)
+	{
 		Iterator<FieldMapping> it = fieldMappingsIterator();
-		while(it.hasNext()) {
+		while (it.hasNext())
+		{
 			FieldMapping fm = it.next();
 			fm.mapPropertyToField(domainObject, rNode);
 		}
 	}
 
-	public void setNodeLabelMapping(NodeLabelMapping nodeLabelMapping) {
+	public NodeLabelMapping getNodeLabelMapping()
+	{
+		return nodeLabelMapping;
+	}
+
+	public void setNodeLabelMapping(NodeLabelMapping nodeLabelMapping)
+	{
 		this.nodeLabelMapping = nodeLabelMapping;
 	}
 
-	public NodeLabelMapping getNodeLabelMapping() {
-		return nodeLabelMapping;
-	}
-	
 	public abstract Iterator<FieldMapping> fieldMappingsIterator();
-	
-	public boolean shouldPerformFieldMapping(FieldMapping fieldMapping) {
+
+	public boolean shouldPerformFieldMapping(FieldMapping fieldMapping)
+	{
 		return true;
 	}
-	
+
 	public abstract FieldMapping getFieldMappingForField(String fieldName);
 }

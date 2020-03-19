@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014-2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,33 +21,26 @@ import iot.jcypher.domain.internal.DomainAccess.InternalDomainAccess;
 import iot.jcypher.domain.mapping.FieldMapping;
 import iot.jcypher.domain.mapping.MappingUtil;
 import iot.jcypher.domainquery.ast.UnionExpression;
-import iot.jcypher.domainquery.internal.QueryRecorder;
 import iot.jcypher.domainquery.internal.QueryExecutor.MappingInfo;
-import iot.jcypher.query.values.JcBoolean;
-import iot.jcypher.query.values.JcCollection;
-import iot.jcypher.query.values.JcNode;
-import iot.jcypher.query.values.JcNumber;
-import iot.jcypher.query.values.JcProperty;
-import iot.jcypher.query.values.JcString;
-import iot.jcypher.query.values.JcValue;
-import iot.jcypher.query.values.ValueAccess;
-import iot.jcypher.query.values.ValueElement;
+import iot.jcypher.domainquery.internal.QueryRecorder;
+import iot.jcypher.query.values.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class DomainObjectMatch<T> implements IPredicateOperand1 {
+public class DomainObjectMatch<T> implements IPredicateOperand1
+{
 
 	private static final String separator = "_";
 	private static final String msg_1 = "attributes used in WHERE clauses must be of simple type." +
-									" Not true for attribute [";
-	
+			" Not true for attribute [";
+
 	// if delegate != null, this DomainObjectMatch has been constructed for a generic query.
 	// the delegate is the match for the true type.
 	private DomainObjectMatch<?> delegate;
 	private DomainObjectMatch<?> traversalSource;
-	
+
 	// a collectExpressionOwner is the DomaiObjectMatch which
 	// is produced by a collection expression
 	private List<DomainObjectMatch<?>> collectExpressionOwner;
@@ -61,9 +54,10 @@ public class DomainObjectMatch<T> implements IPredicateOperand1 {
 	private boolean pageChanged;
 	private boolean partOfReturn;
 	private UnionExpression unionExpression;
-	
+
 	DomainObjectMatch(Class<T> targetType, int num,
-			MappingInfo mappingInfo) {
+	                  MappingInfo mappingInfo)
+	{
 		super();
 		this.domainObjectType = targetType;
 		this.mappingInfo = mappingInfo;
@@ -73,35 +67,39 @@ public class DomainObjectMatch<T> implements IPredicateOperand1 {
 		this.partOfReturn = true;
 		init(num);
 	}
-	
+
 	/**
 	 * @param targetType must be DomainObject.class  as this represents a generic DomainObjectMatch
 	 * @param delegate
 	 */
-	DomainObjectMatch(Class<T> targetType, DomainObjectMatch<?> delegate) {
+	DomainObjectMatch(Class<T> targetType, DomainObjectMatch<?> delegate)
+	{
 		super();
 		if (targetType != DomainObject.class)
 			throw new RuntimeException("targetType must be DomainObject.class");
 		this.delegate = delegate;
 		this.domainObjectType = targetType;
 	}
-	
-	private void init(int num) {
-		this.baseNodeName =APIAccess.nodePrefix.concat(String.valueOf(num));
+
+	private void init(int num)
+	{
+		this.baseNodeName = APIAccess.nodePrefix.concat(String.valueOf(num));
 		this.typeList = this.mappingInfo.getCompoundTypesFor(this.domainObjectType);
 		this.nodes = new ArrayList<JcNode>(this.typeList.size());
-		for (int i = 0; i < this.typeList.size(); i++) {
+		for (int i = 0; i < this.typeList.size(); i++)
+		{
 			this.nodes.add(new JcNode(this.baseNodeName.concat(separator).concat(String.valueOf(i))));
 		}
 	}
-	
+
 	/**
 	 * <b>Note:</b> this expression is only valid within a collection expression.
-	 * <br/>It constrains a set by applying the COUNT expression on another set which must be directly derived via a traversal expression. 
+	 * <br/>It constrains a set by applying the COUNT expression on another set which must be directly derived via a traversal expression.
 	 * <br/>'addresses' below has been directly derived from 'persons' via traversal.
 	 * <br/>e.g. q.SELECT_FROM(persons).ELEMENTS( q.WHERE(addresses.COUNT()).EQUALS(3));
 	 */
-	public Count COUNT() {
+	public Count COUNT()
+	{
 		if (this.delegate != null)
 			return this.delegate.COUNT();
 		Count ret = APIAccess.createCount(this);
@@ -109,84 +107,98 @@ public class DomainObjectMatch<T> implements IPredicateOperand1 {
 		QueryRecorder.recordInvocationNoConcat(this, "COUNT", ret);
 		return ret;
 	}
-	
+
 	/**
 	 * Access an attribute, don't rely on a specific attribute type
+	 *
 	 * @param name the attribute name
 	 * @return
 	 */
-	public JcProperty atttribute(String name) {
+	public JcProperty atttribute(String name)
+	{
 		if (this.delegate != null)
 			return this.delegate.atttribute(name);
 		JcProperty ret = checkField_getJcVal(name, JcProperty.class);
 		QueryRecorder.recordInvocationReplace(this, ret, "atttribute");
 		return ret;
 	}
-	
+
 	/**
 	 * Access a string attribute
+	 *
 	 * @param name the attribute name
 	 * @return a JcString
 	 */
-	public JcString stringAtttribute(String name) {
+	public JcString stringAtttribute(String name)
+	{
 		if (this.delegate != null)
 			return this.delegate.stringAtttribute(name);
 		JcString ret = checkField_getJcVal(name, JcString.class);
 		QueryRecorder.recordInvocationReplace(this, ret, "stringAtttribute");
 		return ret;
 	}
-	
+
 	/**
 	 * Access a number attribute
+	 *
 	 * @param name the attribute name
 	 * @return a JcNumber
 	 */
-	public JcNumber numberAtttribute(String name) {
+	public JcNumber numberAtttribute(String name)
+	{
 		if (this.delegate != null)
 			return this.delegate.numberAtttribute(name);
 		JcNumber ret = checkField_getJcVal(name, JcNumber.class);
 		QueryRecorder.recordInvocationReplace(this, ret, "numberAtttribute");
 		return ret;
 	}
-	
+
 	/**
 	 * Access a boolean attribute
+	 *
 	 * @param name the attribute name
 	 * @return a JcBoolean
 	 */
-	public JcBoolean booleanAtttribute(String name) {
+	public JcBoolean booleanAtttribute(String name)
+	{
 		if (this.delegate != null)
 			return this.delegate.booleanAtttribute(name);
 		JcBoolean ret = checkField_getJcVal(name, JcBoolean.class);
 		QueryRecorder.recordInvocationReplace(this, ret, "booleanAtttribute");
 		return ret;
 	}
-	
+
 	/**
 	 * Access a collection attribute
+	 *
 	 * @param name the attribute name
 	 * @return a JcCollection
 	 */
-	public JcCollection collectionAtttribute(String name) {
+	public JcCollection collectionAtttribute(String name)
+	{
 		if (this.delegate != null)
 			return this.delegate.collectionAtttribute(name);
 		JcCollection ret = checkField_getJcVal(name, JcCollection.class);
 		QueryRecorder.recordInvocationReplace(this, ret, "collectionAtttribute");
 		return ret;
 	}
-	
+
 	/**
 	 * For pagination support, set offset (start) and length of the set of matching objects to be
 	 * returned with respect to the total number of matching objects.
+	 *
 	 * @param offset
 	 * @param length
 	 */
-	public void setPage(int offset, int length) {
+	public void setPage(int offset, int length)
+	{
 		if (this.delegate != null)
 			this.delegate.setPage(offset, length);
-		else {
+		else
+		{
 			boolean changed = this.pageOffset != offset || this.pageLength != length;
-			if (changed) {
+			if (changed)
+			{
 				this.pageOffset = offset;
 				this.pageLength = length;
 				this.pageChanged = true;
@@ -196,54 +208,68 @@ public class DomainObjectMatch<T> implements IPredicateOperand1 {
 				QueryRecorder.literal(offset), QueryRecorder.literal(length));
 	}
 
-	Class<T> getDomainObjectType() {
+	Class<T> getDomainObjectType()
+	{
 		return domainObjectType;
 	}
 
-	List<JcNode> getNodes() {
+	List<JcNode> getNodes()
+	{
 		return nodes;
 	}
 
-	List<Class<?>> getTypeList() {
+	List<Class<?>> getTypeList()
+	{
 		return typeList;
 	}
 
-	MappingInfo getMappingInfo() {
+	MappingInfo getMappingInfo()
+	{
 		return mappingInfo;
 	}
 
-	String getBaseNodeName() {
+	String getBaseNodeName()
+	{
 		return baseNodeName;
 	}
-	
-	boolean isPageChanged() {
+
+	boolean isPageChanged()
+	{
 		return pageChanged;
 	}
 
-	void setPageChanged(boolean pageChanged) {
+	void setPageChanged(boolean pageChanged)
+	{
 		this.pageChanged = pageChanged;
 	}
 
-	int getPageOffset() {
+	int getPageOffset()
+	{
 		return pageOffset;
 	}
 
-	int getPageLength() {
+	int getPageLength()
+	{
 		return pageLength;
 	}
-	
-	boolean isPartOfReturn() {
+
+	boolean isPartOfReturn()
+	{
 		return partOfReturn;
 	}
 
-	void setPartOfReturn(boolean partOfReturn) {
+	void setPartOfReturn(boolean partOfReturn)
+	{
 		this.partOfReturn = partOfReturn;
 	}
 
-	Class<?> getTypeForNodeName(String nodeName) {
+	Class<?> getTypeForNodeName(String nodeName)
+	{
 		int idx = -1;
-		for (int i = 0; i < this.nodes.size(); i++) {
-			if (ValueAccess.getName(this.nodes.get(i)).equals(nodeName)) {
+		for (int i = 0; i < this.nodes.size(); i++)
+		{
+			if (ValueAccess.getName(this.nodes.get(i)).equals(nodeName))
+			{
 				idx = i;
 				break;
 			}
@@ -255,65 +281,79 @@ public class DomainObjectMatch<T> implements IPredicateOperand1 {
 
 	/**
 	 * may return null
+	 *
 	 * @param attribName
 	 * @param type
 	 * @return
 	 */
-	private String getPropertyOrRelationName(FieldMapping fm) {
+	private String getPropertyOrRelationName(FieldMapping fm)
+	{
 		if (fm != null)
 			return fm.getPropertyOrRelationName();
 		return null;
 	}
-	
-	DomainObjectMatch<?> getTraversalSource() {
+
+	DomainObjectMatch<?> getTraversalSource()
+	{
 		return traversalSource;
 	}
 
-	void setTraversalSource(DomainObjectMatch<?> traversalSource) {
+	void setTraversalSource(DomainObjectMatch<?> traversalSource)
+	{
 		this.traversalSource = traversalSource;
 	}
 
-	UnionExpression getUnionExpression() {
+	UnionExpression getUnionExpression()
+	{
 		return unionExpression;
 	}
 
-	void setUnionExpression(UnionExpression unionExpression) {
+	void setUnionExpression(UnionExpression unionExpression)
+	{
 		this.unionExpression = unionExpression;
 	}
 
-	List<DomainObjectMatch<?>> getCollectExpressionOwner() {
+	List<DomainObjectMatch<?>> getCollectExpressionOwner()
+	{
 		return collectExpressionOwner;
 	}
-	
-	void addCollectExpressionOwner(DomainObjectMatch<?> dom) {
+
+	void addCollectExpressionOwner(DomainObjectMatch<?> dom)
+	{
 		if (this.collectExpressionOwner == null)
 			this.collectExpressionOwner = new ArrayList<DomainObjectMatch<?>>();
 		if (!this.collectExpressionOwner.contains(dom))
 			this.collectExpressionOwner.add(dom);
 	}
-	
-	JcValue getCloneOf(JcValue val) {
+
+	JcValue getCloneOf(JcValue val)
+	{
 		String nm = ValueAccess.getName(val);
 		return checkField_getJcVal(nm, val.getClass());
 	}
-	
-	DomainObjectMatch<T> create(int num, MappingInfo mappingInf) {
+
+	DomainObjectMatch<T> create(int num, MappingInfo mappingInf)
+	{
 		return new DomainObjectMatch<T>(this.domainObjectType,
 				num, mappingInf);
 	}
 
-	DomainObjectMatch<?> getDelegate() {
+	DomainObjectMatch<?> getDelegate()
+	{
 		return delegate;
 	}
 
-	private boolean needsRelation(FieldMapping fm) {
+	private boolean needsRelation(FieldMapping fm)
+	{
 		boolean ret;
 		InternalDomainAccess internalAccess = null;
-		try {
+		try
+		{
 			internalAccess = MappingUtil.internalDomainAccess.get();
 			MappingUtil.internalDomainAccess.set(this.mappingInfo.getInternalDomainAccess());
 			ret = fm.needsRelation();
-		} finally {
+		} finally
+		{
 			if (internalAccess != null)
 				MappingUtil.internalDomainAccess.set(internalAccess);
 			else
@@ -321,19 +361,23 @@ public class DomainObjectMatch<T> implements IPredicateOperand1 {
 		}
 		return ret;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private <E> E checkField_getJcVal(String name, Class<E> attributeType) {
+	private <E> E checkField_getJcVal(String name, Class<E> attributeType)
+	{
 		E ret = null;
 		List<JcNode> validFor = new ArrayList<JcNode>();
-		for (int i = 0; i < this.typeList.size(); i++) {
+		for (int i = 0; i < this.typeList.size(); i++)
+		{
 			FieldMapping fm = this.mappingInfo.getFieldMapping(name, typeList.get(i));
-			if (fm != null) {
+			if (fm != null)
+			{
 				if (needsRelation(fm))
 					throw new RuntimeException(msg_1 + name + "] " +
 							"in domain object type: [" + domainObjectType.getName() + "]");
 				validFor.add(this.nodes.get(i));
-				if (ret == null) {
+				if (ret == null)
+				{
 					String propName = this.getPropertyOrRelationName(fm);
 					JcNode n = this.nodes.get(i);
 					ValueAccess.setHint(n, APIAccess.hintKey_dom, this);
@@ -347,14 +391,14 @@ public class DomainObjectMatch<T> implements IPredicateOperand1 {
 						ret = (E) n.numberProperty(propName);
 					else if (attributeType.equals(JcCollection.class))
 						ret = (E) n.collectionProperty(propName);
-					ValueAccess.setHint((ValueElement)ret, APIAccess.hintKey_validNodes, validFor);
-					ValueAccess.setHint((ValueElement)ret, APIAccess.hintKey_dom, this);
+					ValueAccess.setHint((ValueElement) ret, APIAccess.hintKey_validNodes, validFor);
+					ValueAccess.setHint((ValueElement) ret, APIAccess.hintKey_dom, this);
 				}
 			}
 		}
 		if (ret == null)
 			throw new RuntimeException("attribute: [" + name + "] does not exist " +
-							"in domain object type: [" + domainObjectType.getName() + "]");
+					"in domain object type: [" + domainObjectType.getName() + "]");
 		return ret;
 	}
 }

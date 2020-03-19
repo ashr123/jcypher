@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,30 +16,36 @@
 
 package iot.jcypher.domain.mapping.surrogate;
 
-public class Map extends AbstractSurrogate {
+public class Map extends AbstractSurrogate
+{
 
 	private java.util.Map<Object, Object> m_content;
 
-	public Map() {
+	public Map()
+	{
 		super();
 	}
 
-	public Map(java.util.Map<Object, Object> content) {
+	public Map(java.util.Map<Object, Object> content)
+	{
 		super();
 		this.m_content = content;
 	}
 
 	@Override
-	public java.util.Map<Object, Object> getContent() {
+	public java.util.Map<Object, Object> getContent()
+	{
 		return m_content;
 	}
 
-	public void setContent(java.util.Map<Object, Object> content) {
+	public void setContent(java.util.Map<Object, Object> content)
+	{
 		this.m_content = content;
 	}
-	
+
 	@Override
-	public Object objectToUpdate() {
+	public Object objectToUpdate()
+	{
 		return getContent();
 	}
 }

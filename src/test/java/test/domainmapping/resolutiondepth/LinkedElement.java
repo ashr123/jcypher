@@ -1,35 +1,42 @@
 package test.domainmapping.resolutiondepth;
 
-public class LinkedElement {
+public class LinkedElement
+{
 
 	private String description;
 	private LinkedElement next;
-	
-	public LinkedElement() {
+
+	public LinkedElement()
+	{
 		super();
 	}
 
-	public LinkedElement(String description) {
+	public LinkedElement(String description)
+	{
 		super();
 		this.description = description;
 	}
 
-	public LinkedElement(String description, LinkedElement next) {
+	public LinkedElement(String description, LinkedElement next)
+	{
 		super();
 		this.description = description;
 		this.next = next;
 	}
 
-	public LinkedElement getNext() {
+	public LinkedElement getNext()
+	{
 		return next;
 	}
 
-	public void setNext(LinkedElement next) {
+	public void setNext(LinkedElement next)
+	{
 		this.next = next;
 	}
 
-	public String getDescription() {
+	public String getDescription()
+	{
 		return description;
 	}
-	
+
 }

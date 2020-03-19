@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,8 @@ import iot.jcypher.query.api.IClause;
 /**
  * <div color='red' style="font-size:24px;color:red"><b><i>JCYPHER QUERY</i></b></div>
  */
-public class JcQuery {
+public class JcQuery
+{
 
 	private boolean extractParams = true;
 	private IClause clauses[];
@@ -31,15 +32,18 @@ public class JcQuery {
 	/**
 	 * Construct a JQuery object
 	 */
-	public JcQuery() {
+	public JcQuery()
+	{
 		super();
 	}
 
 	/**
 	 * Construct a JQuery object, set the planner strategy
+	 *
 	 * @param plannerStrategy
 	 */
-	public JcQuery(PlannerStrategy plannerStrategy) {
+	public JcQuery(PlannerStrategy plannerStrategy)
+	{
 		super();
 		this.plannerStrategy = plannerStrategy;
 	}
@@ -49,7 +53,8 @@ public class JcQuery {
 	 * <div color='red' style="font-size:18px;color:red"><i>answer the set of clauses which compose the query</i></div>
 	 * <br/>
 	 */
-	public IClause[] getClauses() {
+	public IClause[] getClauses()
+	{
 		return clauses;
 	}
 
@@ -58,42 +63,49 @@ public class JcQuery {
 	 * <div color='red' style="font-size:18px;color:red"><i>set an array of clauses which compose the query</i></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. JcQuery query = new JcQuery();</i></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>query.setClauses(new IClause[] {
-	  * <br/>CREATE.node(juliusCaesar).property("title").value("Julius Caesar"),
-	  * <br/>CREATE...
-	  * <br/>});</i></div></i></div>
+	 * <br/>CREATE.node(juliusCaesar).property("title").value("Julius Caesar"),
+	 * <br/>CREATE...
+	 * <br/>});</i></div></i></div>
 	 * <br/>
 	 */
-	public void setClauses(IClause[] clauses) {
+	public void setClauses(IClause[] clauses)
+	{
 		this.clauses = clauses;
 	}
 
 	/**
 	 * This has an effect only when the query is mapped to JSON.
-	 * <br/>If extractParams is true, literals are replaced with parameters 
+	 * <br/>If extractParams is true, literals are replaced with parameters
 	 * in order to speed up queries in repeated scenarios.
 	 * <br/>Defaults to true.
+	 *
 	 * @return
 	 */
-	public boolean isExtractParams() {
+	public boolean isExtractParams()
+	{
 		return extractParams;
 	}
 
 	/**
 	 * This has an effect only when the query is mapped to JSON.
-	 * <br/>If extractParams is true, literals are replaced with parameters 
+	 * <br/>If extractParams is true, literals are replaced with parameters
 	 * in order to speed up queries in repeated scenarios.
 	 * <br/>Defaults to true.
+	 *
 	 * @param extractParams
 	 */
-	public void setExtractParams(boolean extractParams) {
+	public void setExtractParams(boolean extractParams)
+	{
 		this.extractParams = extractParams;
 	}
 
-	public PlannerStrategy getPlannerStrategy() {
+	public PlannerStrategy getPlannerStrategy()
+	{
 		return plannerStrategy;
 	}
 
-	public void setPlannerStrategy(PlannerStrategy plannerStrategy) {
+	public void setPlannerStrategy(PlannerStrategy plannerStrategy)
+	{
 		this.plannerStrategy = plannerStrategy;
 	}
 }

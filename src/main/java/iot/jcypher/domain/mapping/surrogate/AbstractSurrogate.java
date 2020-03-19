@@ -3,10 +3,12 @@ package iot.jcypher.domain.mapping.surrogate;
 import java.util.Collection;
 import java.util.Map;
 
-public abstract class AbstractSurrogate {
+public abstract class AbstractSurrogate
+{
 
 	@SuppressWarnings("unchecked")
-	public static AbstractSurrogate createSurrogate(Object original) {
+	public static AbstractSurrogate createSurrogate(Object original)
+	{
 		if (original instanceof Map<?, ?>)
 			return new iot.jcypher.domain.mapping.surrogate.Map((Map<Object, Object>) original);
 		else if (original instanceof Collection<?>)
@@ -15,8 +17,8 @@ public abstract class AbstractSurrogate {
 			return new iot.jcypher.domain.mapping.surrogate.Array((Object[]) original);
 		return null;
 	}
-	
+
 	public abstract Object getContent();
-	
+
 	public abstract Object objectToUpdate();
 }

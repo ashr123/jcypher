@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,11 @@ import iot.jcypher.query.api.IClause;
 import iot.jcypher.query.ast.cases.CaseExpression;
 import iot.jcypher.query.values.JcValue;
 
-public class EndTerminal extends APIObject implements IClause {
+public class EndTerminal extends APIObject implements IClause
+{
 
-	EndTerminal(CaseExpression cx) {
+	EndTerminal(CaseExpression cx)
+	{
 		super();
 		this.astNode = cx;
 	}
@@ -34,7 +36,8 @@ public class EndTerminal extends APIObject implements IClause {
 	 * <div color='red' style="font-size:18px;color:red"><i>you need to do this if you want to return a result from the CASE statement</i></div>
 	 * <br/>
 	 */
-	public CaseTerminal AS(JcValue alias) {
+	public CaseTerminal AS(JcValue alias)
+	{
 		CaseExpression cx = (CaseExpression) this.astNode;
 		cx.setEndAlias(alias);
 		CaseTerminal ret = CaseFactory.createCaseTerminal(cx);

@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014-2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,39 +16,55 @@
 
 package test.domainquery.model;
 
-public class Address implements PointOfContact {
+public class Address implements PointOfContact
+{
 
 	private String street;
 	private int number;
 	private Area area;
-	
-	public Address() {
+
+	public Address()
+	{
 		super();
 	}
-	public Address(String street, int number) {
+
+	public Address(String street, int number)
+	{
 		super();
 		this.street = street;
 		this.number = number;
 	}
-	public String getStreet() {
+
+	public String getStreet()
+	{
 		return street;
 	}
-	public int getNumber() {
+
+	public int getNumber()
+	{
 		return number;
 	}
-	public void setNumber(int number) {
+
+	public void setNumber(int number)
+	{
 		this.number = number;
 	}
-	public Area getArea() {
+
+	public Area getArea()
+	{
 		return area;
 	}
-	public void setArea(Area area) {
+
+	public void setArea(Area area)
+	{
 		this.area = area;
 	}
+
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "Address [street=" + street + ", number=" + number + ", area="
 				+ area + "]";
 	}
-	
+
 }

@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,9 +23,11 @@ import iot.jcypher.query.ast.separate.SeparateExpression;
 /**
  * <div color='red' style="font-size:24px;color:red"><b><i>JCYPHER CLAUSE</i></b></div>
  */
-public class SEPARATE extends APIObject implements IClause{
+public class SEPARATE extends APIObject implements IClause
+{
 
-	private SEPARATE() {
+	private SEPARATE()
+	{
 		super();
 		this.astNode = new SeparateExpression();
 	}
@@ -41,7 +43,8 @@ public class SEPARATE extends APIObject implements IClause{
 	 * <div color='red' style="font-size:18px;color:red"><i>instead of <b>MATCH (n1), (n2)</b></i></div>
 	 * <br/>
 	 */
-	public static SEPARATE nextClause() {
+	public static SEPARATE nextClause()
+	{
 		return new SEPARATE();
 	}
 }

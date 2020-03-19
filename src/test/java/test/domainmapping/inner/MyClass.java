@@ -1,97 +1,119 @@
 package test.domainmapping.inner;
 
-public class MyClass {
+public class MyClass
+{
 
 	private String name;
 	private MyInnerClass myInnerClass;
 	private MyStaticInnerClass myStaticInnerClass;
 	private MyInterface myInterface;
-	
-	public String getName() {
+
+	public String getName()
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name)
+	{
 		this.name = name;
 	}
 
-	public MyInnerClass getMyInnerClass() {
+	public MyInnerClass getMyInnerClass()
+	{
 		return myInnerClass;
 	}
 
-	public void setMyInnerClass(MyInnerClass myInnerClass) {
+	public void setMyInnerClass(MyInnerClass myInnerClass)
+	{
 		this.myInnerClass = myInnerClass;
 	}
-	
-	public MyStaticInnerClass getMyStaticInnerClass() {
+
+	public MyStaticInnerClass getMyStaticInnerClass()
+	{
 		return myStaticInnerClass;
 	}
 
-	public void setMyStaticInnerClass(MyStaticInnerClass myStaticInnerClass) {
+	public void setMyStaticInnerClass(MyStaticInnerClass myStaticInnerClass)
+	{
 		this.myStaticInnerClass = myStaticInnerClass;
 	}
 
-	public MyInterface getMyInterface() {
+	public MyInterface getMyInterface()
+	{
 		return myInterface;
 	}
 
-	public void setMyInterface(MyInterface myInterface) {
+	public void setMyInterface(MyInterface myInterface)
+	{
 		this.myInterface = myInterface;
 	}
 
-	public MyInnerClass createInnerClass() {
+	public MyInnerClass createInnerClass()
+	{
 		return new MyInnerClass();
 	}
 
 	/********************************/
-	public class MyInnerClass {
+	public static class MyStaticInnerClass
+	{
+		private String name;
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public void setName(String name)
+		{
+			this.name = name;
+		}
+	}
+
+	/********************************/
+	public class MyInnerClass
+	{
 		private String name;
 		private MyInnerInnerClass myInnerInnerClass;
 
-		public String getName() {
+		public String getName()
+		{
 			return name;
 		}
 
-		public void setName(String name) {
+		public void setName(String name)
+		{
 			this.name = name;
 		}
-		
-		public MyInnerInnerClass getMyInnerInnerClass() {
+
+		public MyInnerInnerClass getMyInnerInnerClass()
+		{
 			return myInnerInnerClass;
 		}
 
-		public void setMyInnerInnerClass(MyInnerInnerClass myInnerInnerClass) {
+		public void setMyInnerInnerClass(MyInnerInnerClass myInnerInnerClass)
+		{
 			this.myInnerInnerClass = myInnerInnerClass;
 		}
 
-		public MyInnerInnerClass createInnerInnerClass() {
+		public MyInnerInnerClass createInnerInnerClass()
+		{
 			return new MyInnerInnerClass();
 		}
-		
+
 		/********************************/
-		public class MyInnerInnerClass {
+		public class MyInnerInnerClass
+		{
 			private String name;
 
-			public String getName() {
+			public String getName()
+			{
 				return name;
 			}
 
-			public void setName(String name) {
+			public void setName(String name)
+			{
 				this.name = name;
 			}
-		}
-	}
-	
-	/********************************/
-	public static class MyStaticInnerClass {
-		private String name;
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
 		}
 	}
 }

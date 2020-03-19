@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,11 +20,13 @@ import iot.jcypher.query.api.APIObject;
 import iot.jcypher.query.ast.modify.ModifyExpression;
 import iot.jcypher.query.values.JcElement;
 
-public class CopyProperties<T extends APIObject> extends APIObject {
+public class CopyProperties<T extends APIObject> extends APIObject
+{
 
 	private T connector;
-	
-	CopyProperties(ModifyExpression mx, T connector) {
+
+	CopyProperties(ModifyExpression mx, T connector)
+	{
 		super();
 		this.astNode = mx;
 		this.connector = connector;
@@ -36,8 +38,9 @@ public class CopyProperties<T extends APIObject> extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...copyPropertiesFrom(n).<b>to(m)</b></i></div>
 	 * <br/>
 	 */
-	public T to(JcElement target) {
-		ModifyExpression mx = (ModifyExpression)this.astNode;
+	public T to(JcElement target)
+	{
+		ModifyExpression mx = (ModifyExpression) this.astNode;
 		mx.getPropertiesCopy().setTarget(target);
 		return this.connector;
 	}

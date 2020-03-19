@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,23 +18,28 @@ package iot.jcypher.domain.mapping;
 
 import iot.jcypher.graph.GrNode;
 
-public class NodeLabelMapping {
+public class NodeLabelMapping
+{
 
 	private String label;
-	
-	public NodeLabelMapping(String label) {
+
+	public NodeLabelMapping(String label)
+	{
 		super();
 		this.label = label;
 	}
 
-	public void mapLabel(Object domainObject, GrNode rNode) {
-		if (this.label != null) {
+	public void mapLabel(Object domainObject, GrNode rNode)
+	{
+		if (this.label != null)
+		{
 			if (rNode.getLabel(this.label) == null)
 				rNode.addLabel(this.label);
 		}
 	}
 
-	public String getLabel() {
+	public String getLabel()
+	{
 		return this.label;
 	}
 }

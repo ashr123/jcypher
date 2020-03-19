@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,18 +26,15 @@ import iot.jcypher.query.api.predicate.Concatenator;
 import iot.jcypher.query.ast.collection.CollectExpression;
 import iot.jcypher.query.ast.collection.CollectionSpec;
 import iot.jcypher.query.ast.predicate.PredicateExpression;
-import iot.jcypher.query.ast.returns.ReturnAggregate;
-import iot.jcypher.query.ast.returns.ReturnBoolean;
-import iot.jcypher.query.ast.returns.ReturnCollection;
-import iot.jcypher.query.ast.returns.ReturnElement;
-import iot.jcypher.query.ast.returns.ReturnExpression;
-import iot.jcypher.query.ast.returns.ReturnPattern;
+import iot.jcypher.query.ast.returns.*;
 import iot.jcypher.query.values.JcCollection;
 import iot.jcypher.query.values.JcValue;
 
-public class RDistinct extends APIObject {
+public class RDistinct extends APIObject
+{
 
-	RDistinct(ReturnExpression rx) {
+	RDistinct(ReturnExpression rx)
+	{
 		super();
 		this.astNode = rx;
 	}
@@ -48,7 +45,8 @@ public class RDistinct extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. <b>ALL()</b></i></div>
 	 * <br/>
 	 */
-	public RTerminal ALL() {
+	public RTerminal ALL()
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnElement elem = new ReturnElement();
 		elem.setAll();
@@ -56,7 +54,7 @@ public class RDistinct extends APIObject {
 		RTerminal ret = new RTerminal(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>select a named (identified) element</i></div>
@@ -64,7 +62,8 @@ public class RDistinct extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>or an expression like <b>value(n.property("age"))</b> to be returned</i></div>
 	 * <br/>
 	 */
-	public RSortable value(JcValue element) {
+	public RSortable value(JcValue element)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnElement elem = new ReturnElement();
 		elem.setElement(element);
@@ -72,7 +71,7 @@ public class RDistinct extends APIObject {
 		RSortable ret = new RSortable(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>return the result of evaluating a Predicate Expression (<b>true</b> or <b>false</b>)</i></div>
@@ -80,12 +79,14 @@ public class RDistinct extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...<b>evalPredicate(P.valueOf(a.property("age")).GT(30))</b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> evalPredicate(Concatenator P) {
+	public RElement<RElement<?>> evalPredicate(Concatenator P)
+	{
 		CollectExpression cx = CFactory.getRootCollectExpression(P);
-		if (cx != null) {
+		if (cx != null)
+		{
 			return resultOfCollection(cx);
 		}
-		
+
 		ReturnExpression rx = getReturnExpression();
 		ReturnBoolean bool = new ReturnBoolean();
 		PredicateExpression px = (PredicateExpression) APIObjectAccess.getAstNode(P);
@@ -94,7 +95,7 @@ public class RDistinct extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>try to match a pattern against the graph. If a match is found return <b>true</b> else return <b>false</b></i></div>
@@ -102,7 +103,8 @@ public class RDistinct extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. <b>existsPattern(X.node(n)...)</b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> existsPattern(IElement X) {
+	public RElement<RElement<?>> existsPattern(IElement X)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnPattern pat = new ReturnPattern();
 		pat.setPatternExpression(
@@ -111,7 +113,7 @@ public class RDistinct extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>return the result of a collection expression</i></div>
@@ -119,10 +121,11 @@ public class RDistinct extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...<b>collection(C.COLLECT().property("name").from(nds))<b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> collection(ICollectExpression C) {
-		return resultOfCollection(CFactory.getRootCollectExpression((APIObject)C));
+	public RElement<RElement<?>> collection(ICollectExpression C)
+	{
+		return resultOfCollection(CFactory.getRootCollectExpression((APIObject) C));
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>return a collection</i></div>
@@ -130,7 +133,8 @@ public class RDistinct extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>or ...<b>collection(n.labels())</b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> collection(JcCollection collection) {
+	public RElement<RElement<?>> collection(JcCollection collection)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnCollection coll = new ReturnCollection();
 		CollectionSpec cs = new CollectionSpec(collection);
@@ -141,8 +145,9 @@ public class RDistinct extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
-	private RElement<RElement<?>> resultOfCollection(CollectExpression collXpr) {
+
+	private RElement<RElement<?>> resultOfCollection(CollectExpression collXpr)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnCollection coll = new ReturnCollection();
 		coll.setCollectExpression(collXpr);
@@ -150,8 +155,9 @@ public class RDistinct extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
-	protected ReturnExpression getReturnExpression() {
-		return (ReturnExpression)this.astNode;
+
+	protected ReturnExpression getReturnExpression()
+	{
+		return (ReturnExpression) this.astNode;
 	}
 }

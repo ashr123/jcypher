@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,8 @@ import iot.jcypher.query.values.IHas;
 import iot.jcypher.query.values.ValueElement;
 
 
-public interface IBeforePredicate {
+public interface IBeforePredicate
+{
 
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
@@ -32,7 +33,7 @@ public interface IBeforePredicate {
 	 * <br/>
 	 */
 	public BooleanOperation valueOf(ValueElement val);
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>tests for existence of node labels or node/relation properties,</i></div>
@@ -42,7 +43,7 @@ public interface IBeforePredicate {
 	 * <br/>
 	 */
 	public Concatenator has(IHas val);
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>negate a boolean</i></div>
@@ -50,7 +51,7 @@ public interface IBeforePredicate {
 	 * <br/>
 	 */
 	public IBeforePredicate NOT();
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>open a bracket; allows to nest expressions, must have a matching BR_CLOSE()</i></div>
@@ -59,7 +60,7 @@ public interface IBeforePredicate {
 	 * <br/>
 	 */
 	public Concat BR_OPEN();
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>matches a pattern expression against the graph. If the result is empty, returns false, else returns true</i></div>
@@ -68,7 +69,7 @@ public interface IBeforePredicate {
 	 * <br/>
 	 */
 	public Concatenator existsPattern(IElement X);
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>iterates over a collection allowing to test each element of the collection against a predicate expression</i></div>

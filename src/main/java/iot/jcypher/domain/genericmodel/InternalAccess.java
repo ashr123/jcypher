@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,84 +16,97 @@
 
 package iot.jcypher.domain.genericmodel;
 
-import iot.jcypher.domain.genericmodel.DOType.Builder;
-import iot.jcypher.domain.genericmodel.DOType.DOClassBuilder;
-import iot.jcypher.domain.genericmodel.DOType.DOEnumBuilder;
-import iot.jcypher.domain.genericmodel.DOType.DOInterfaceBuilder;
-import iot.jcypher.domain.genericmodel.DOType.Kind;
+import iot.jcypher.domain.genericmodel.DOType.*;
 import iot.jcypher.domain.genericmodel.internal.DomainModel;
 
 /**
  * For internal use only
- * @author wolfgang
  *
+ * @author wolfgang
  */
-public class InternalAccess {
+public class InternalAccess
+{
 
-	public static void setRawObject(DomainObject dObj, Object rawObject) {
+	public static void setRawObject(DomainObject dObj, Object rawObject)
+	{
 		dObj.setRawObject(rawObject);
 	}
-	
-	public static DOType createDOType(String typeName, DomainModel domainModel) {
+
+	public static DOType createDOType(String typeName, DomainModel domainModel)
+	{
 		return new DOType(typeName, domainModel);
 	}
-	
-	public static void setKind(Builder builder, Kind kind) {
+
+	public static void setKind(Builder builder, Kind kind)
+	{
 		builder.setKind(kind);
 	}
-	
-	public static Builder createBuilder(DOType doType) {
+
+	public static Builder createBuilder(DOType doType)
+	{
 		return doType.createClassBuilder();
 	}
-	
-	public static void setSuperType(Builder builder, DOType superType) {
+
+	public static void setSuperType(Builder builder, DOType superType)
+	{
 		builder.setSuperTypeInternal(superType);
 	}
-	
-	public static void setNodeId(DOType doType, long nid) {
+
+	public static void setNodeId(DOType doType, long nid)
+	{
 		doType.setNodeId(nid);
 	}
-	
-	public static DOField createDOField(String name, String typeName, DOType ownerType) {
+
+	public static DOField createDOField(String name, String typeName, DOType ownerType)
+	{
 		return new DOField(name, typeName, false, ownerType); // not a list
 	}
-	
-	public static DOClassBuilder createClassBuilder(String typeName, DomainModel domainModel) {
+
+	public static DOClassBuilder createClassBuilder(String typeName, DomainModel domainModel)
+	{
 		DOType doType = new DOType(typeName, domainModel);
 		return doType.createClassBuilder();
 	}
-	
-	public static DOInterfaceBuilder createInterfaceBuilder(String typeName, DomainModel domainModel) {
+
+	public static DOInterfaceBuilder createInterfaceBuilder(String typeName, DomainModel domainModel)
+	{
 		DOType doType = new DOType(typeName, domainModel);
 		return doType.createInterfaceBuilder();
 	}
-	
-	public static DOEnumBuilder createEnumBuilder(String typeName, DomainModel domainModel) {
+
+	public static DOEnumBuilder createEnumBuilder(String typeName, DomainModel domainModel)
+	{
 		DOType doType = new DOType(typeName, domainModel);
 		return doType.createEnumBuilder();
 	}
-	
-	public static Object getRawObject(DomainObject domainObject) {
+
+	public static Object getRawObject(DomainObject domainObject)
+	{
 		return domainObject.getRawObject();
 	}
-	
-	public static void setComponentTypeName(DOField doField, String componentTypeName) {
+
+	public static void setComponentTypeName(DOField doField, String componentTypeName)
+	{
 		doField.setComponentTypeName(componentTypeName);
 	}
-	
-	public static DomainObject createDomainObject(DOType doType) {
+
+	public static DomainObject createDomainObject(DOType doType)
+	{
 		return new DomainObject(doType, false); // don't add to nursery
 	}
-	
-	public static Object getFieldValueInternal(DomainObject domainObject, String fieldName) {
+
+	public static Object getFieldValueInternal(DomainObject domainObject, String fieldName)
+	{
 		return domainObject.getFieldValue(fieldName, true);
 	}
-	
-	public static void addDeclaredFieldUnique(DOType typ, DOField field) {
+
+	public static void addDeclaredFieldUnique(DOType typ, DOField field)
+	{
 		typ.addDeclaredFieldUnique(field);
 	}
-	
-	public static void addInterfaceUnique(DOType typ, DOType intf) {
+
+	public static void addInterfaceUnique(DOType typ, DOType intf)
+	{
 		typ.addInterfaceUnique(intf);
 	}
 }

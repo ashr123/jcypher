@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,8 @@ import iot.jcypher.query.values.JcCollection;
 import iot.jcypher.query.values.JcNode;
 import iot.jcypher.query.values.JcPath;
 
-public interface ICollection<T> {
+public interface ICollection<T>
+{
 
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
@@ -31,7 +32,7 @@ public interface ICollection<T> {
 	 * <br/>
 	 */
 	public T IN(ICollectExpression C);
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>specify a collection in order to iterate over its elements or to test for containment of elements</i></div>
@@ -40,7 +41,7 @@ public interface ICollection<T> {
 	 * <br/>
 	 */
 	public T IN(JcCollection collection);
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>specify a collection in order to iterate over its elements or to test for containment of elements</i></div>
@@ -49,7 +50,7 @@ public interface ICollection<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public <E> T IN_list(E... value);
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>specify a collection in order to iterate over its elements or to test for containment of elements</i></div>
@@ -58,7 +59,7 @@ public interface ICollection<T> {
 	 * <br/>
 	 */
 	public T IN_nodes(JcPath path);
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>specify a collection in order to iterate over its elements or to test for containment of elements</i></div>
@@ -67,7 +68,7 @@ public interface ICollection<T> {
 	 * <br/>
 	 */
 	public T IN_relations(JcPath path);
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>specify a collection in order to iterate over its elements or to test for containment of elements</i></div>

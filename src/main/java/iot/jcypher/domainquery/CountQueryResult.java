@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014-2016 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,54 +20,66 @@ import iot.jcypher.domainquery.api.APIAccess;
 import iot.jcypher.domainquery.api.DomainObjectMatch;
 import iot.jcypher.domainquery.internal.QueryRecorder;
 
-public class CountQueryResult {
-	
+public class CountQueryResult
+{
+
 	private AbstractDomainQuery domainQuery;
 
-	CountQueryResult(AbstractDomainQuery domainQuery) {
+	CountQueryResult(AbstractDomainQuery domainQuery)
+	{
 		super();
 		this.domainQuery = domainQuery;
 	}
 
 	/**
 	 * Answer the number of domain objects
+	 *
 	 * @param match
 	 * @return the number of domain objects
 	 */
-	public long countOf(DomainObjectMatch<?> match) {
+	public long countOf(DomainObjectMatch<?> match)
+	{
 		long ret;
 		Object so = InternalAccess.getQueryExecutor(this.domainQuery).getMappingInfo()
 				.getInternalDomainAccess().getSyncObject();
-		if (so != null) {
-			synchronized (so) {
+		if (so != null)
+		{
+			synchronized (so)
+			{
 				ret = intCountOf(match);
 			}
 		} else
 			ret = intCountOf(match);
 		return ret;
 	}
-	
-	private long intCountOf(DomainObjectMatch<?> match) {
+
+	private long intCountOf(DomainObjectMatch<?> match)
+	{
 		long ret;
-		if (this.domainQuery.getQueryExecutor().hasBeenReplayed()) {
+		if (this.domainQuery.getQueryExecutor().hasBeenReplayed())
+		{
 			ret = this.domainQuery.getQueryExecutor().getReplayedCountResult(match);
-		} else {
+		} else
+		{
 			Boolean br_old = QueryRecorder.blockRecording.get();
-			try {
+			try
+			{
 				QueryRecorder.blockRecording.set(Boolean.TRUE);
 				DomainObjectMatch<?> delegate = APIAccess.getDelegate(match);
 				if (delegate != null) // this is a generic domain query
 					ret = this.domainQuery.getQueryExecutor().getCountResult(delegate);
 				else
 					ret = this.domainQuery.getQueryExecutor().getCountResult(match);
-			} finally {
+			} finally
+			{
 				QueryRecorder.blockRecording.set(br_old);
 			}
 		}
 		return ret;
 	}
-	
-	AbstractDomainQuery getDomainQuery() {
+
+	AbstractDomainQuery getDomainQuery()
+	{
 		return this.domainQuery;
 	}
 }

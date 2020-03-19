@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014-2016 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,57 +16,26 @@
 
 package test;
 
-import org.junit.Test;
-
 import iot.jcypher.query.api.IClause;
 import iot.jcypher.query.factories.JC;
-import iot.jcypher.query.factories.clause.CASE;
-import iot.jcypher.query.factories.clause.CREATE;
-import iot.jcypher.query.factories.clause.CREATE_INDEX;
-import iot.jcypher.query.factories.clause.CREATE_UNIQUE;
-import iot.jcypher.query.factories.clause.DO;
-import iot.jcypher.query.factories.clause.DROP_INDEX;
-import iot.jcypher.query.factories.clause.ELSE;
-import iot.jcypher.query.factories.clause.END;
-import iot.jcypher.query.factories.clause.FOR_EACH;
-import iot.jcypher.query.factories.clause.MATCH;
-import iot.jcypher.query.factories.clause.MERGE;
-import iot.jcypher.query.factories.clause.NATIVE;
-import iot.jcypher.query.factories.clause.ON_CREATE;
-import iot.jcypher.query.factories.clause.ON_MATCH;
-import iot.jcypher.query.factories.clause.OPTIONAL_MATCH;
-import iot.jcypher.query.factories.clause.RETURN;
-import iot.jcypher.query.factories.clause.SEPARATE;
-import iot.jcypher.query.factories.clause.START;
-import iot.jcypher.query.factories.clause.UNION;
-import iot.jcypher.query.factories.clause.USING;
-import iot.jcypher.query.factories.clause.WHEN;
-import iot.jcypher.query.factories.clause.WHERE;
-import iot.jcypher.query.factories.clause.WITH;
-import iot.jcypher.query.factories.xpression.C;
-import iot.jcypher.query.factories.xpression.F;
-import iot.jcypher.query.factories.xpression.I;
-import iot.jcypher.query.factories.xpression.P;
-import iot.jcypher.query.factories.xpression.X;
-import iot.jcypher.query.values.JcCollection;
-import iot.jcypher.query.values.JcNode;
-import iot.jcypher.query.values.JcNumber;
-import iot.jcypher.query.values.JcPath;
-import iot.jcypher.query.values.JcRelation;
-import iot.jcypher.query.values.JcString;
-import iot.jcypher.query.values.JcValue;
+import iot.jcypher.query.factories.clause.*;
+import iot.jcypher.query.factories.xpression.*;
+import iot.jcypher.query.values.*;
 import iot.jcypher.query.writer.Format;
+import org.junit.Test;
 import util.TestDataReader;
 
 //@Ignore
-public class ClauseTest extends AbstractTestSuite {
-	
+public class ClauseTest extends AbstractTestSuite
+{
+
 	//@Test
-	public void testExperimental() {
+	public void testExperimental()
+	{
 		JcRelation r_0 = new JcRelation("r_0");
 		JcRelation r_1 = new JcRelation("r_1");
 		JcNumber sum = new JcNumber("sum");
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				OPTIONAL_MATCH.node().relation(r_0).node(),
 				WHERE.valueOf(r_0.id()).EQUALS(100),
 				OPTIONAL_MATCH.node().relation(r_1).node(),
@@ -81,72 +50,74 @@ public class ClauseTest extends AbstractTestSuite {
 		String result = print(clauses, Format.PRETTY_1);
 		return;
 	}
-	
+
 	@Test
-	public void testMerge_01() {
+	public void testMerge_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
-		
+
 		TestDataReader tdr = new TestDataReader("/test/Test_MERGE_01.txt");
-		
+
 		/*******************************/
 		JcNode n = new JcNode("n");
 		JcNode s = new JcNode("s");
 		JcRelation r = new JcRelation("r");
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				// match nodes (in this sample for 'John' and 'Song_1')
 				MATCH.node(n).label("Member").property("name").value("John"),
 				MATCH.node(s).label("Song").property("name").value("Song_1"),
 				// match (or create if not exists) a relation
 				MERGE.node(n).relation(r).out().type("PLAYED").node(s),
-				
+
 				// initialize the 'views' property to 1
 				ON_CREATE.SET(r.property("views")).to(1),
 				ON_CREATE.SET(r.property("created")).byExpression(JC.timeStamp()),
-				
+
 				// increment the 'views' property
 				ON_MATCH.SET(r.property("views")).byExpression(
 						r.numberProperty("views").plus(1)),
 		};
-		
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "MERGE_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		clauses = new IClause[] {
+		clauses = new IClause[]{
 				// match nodes (in this sample for 'John' and 'Song_1')
 				MATCH.node(n).label("Member").property("name").value("John"),
 				MATCH.node(s).label("Song").property("name").value("Song_1"),
 				// match (or create if not exists) a relation
 				MERGE.node(n).relation(r).out().type("PLAYED").node(s),
-				
+
 				ON_CREATE.DETACH_DELETE(s),
-				
+
 				ON_MATCH.DETACH_DELETE(s),
 		};
-		
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "MERGE_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		return;
 	}
-	
+
 	@Test
-	public void testForEach_Do_01() {
+	public void testForEach_Do_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
-		
+
 		TestDataReader tdr = new TestDataReader("/test/Test_CASE_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcValue x = new JcValue("x");
-		
+
 		/*******************************/
 //		IClause foreach = FOR_EACH.element(x).IN_list("Stan", "Will", "Henry").DO().
 //				CREATE(X.node().property("name").value(x).relation().in().node(n))
@@ -154,162 +125,165 @@ public class ClauseTest extends AbstractTestSuite {
 //				.SET(n.property("name")).to("John");
 //		
 //		result = print(foreach, Format.PRETTY_1);
-		
+
 //		foreach = FOR_EACH.element(x).IN_list("Stan", "Will", "Henry").DO(new IClause[]{
 //				CREATE.node().property("name").value(x).relation().in().node(n),
 //				DO.SET(n.property("name")).to("John")
 //		});
 //		
 //		result = print(foreach, Format.PRETTY_1);
-		
+
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				MATCH.node(n).label("Person"),
 				WHERE.valueOf(n.property("lastName")).EQUALS("Smith"),
 				FOR_EACH.element(x).IN(C.CREATE(new IClause[]{
 						CASE.result(),
 						WHEN.valueOf(n.property("firstName")).EQUALS("John"),
-							NATIVE.cypher("[1]"),
+						NATIVE.cypher("[1]"),
 						ELSE.perform(),
-							NATIVE.cypher("[]"),
+						NATIVE.cypher("[]"),
 						END.caseXpr()
 				})).DO(new IClause[]{
 						CREATE.node().property("name").value("Johnnys_Relative").relation().in().node(n),
 						DO.SET(n.property("name")).to("John")
 				})
 		};
-		
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "CASE_05";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		return;
 	}
-	
+
 	@Test
-	public void testForEach_Case_01() {
+	public void testForEach_Case_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
-		
+
 		TestDataReader tdr = new TestDataReader("/test/Test_CASE_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcValue x = new JcValue("x");
-		
+
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				MATCH.node(n).label("Person"),
 				WHERE.valueOf(n.property("lastName")).EQUALS("Smith"),
 				FOR_EACH.element(x).IN(C.CREATE(new IClause[]{
 						CASE.result(),
 						WHEN.valueOf(n.property("firstName")).EQUALS("John"),
-							NATIVE.cypher("[1]"),
+						NATIVE.cypher("[1]"),
 						ELSE.perform(),
-							NATIVE.cypher("[]"),
+						NATIVE.cypher("[]"),
 						END.caseXpr()
 				})).DO().SET(n.property("role")).to("Father"),
 				FOR_EACH.element(x).IN(C.CREATE(new IClause[]{
 						CASE.result(),
 						WHEN.valueOf(n.property("firstName")).EQUALS("Caroline"),
-							NATIVE.cypher("[1]"),
+						NATIVE.cypher("[1]"),
 						ELSE.perform(),
-							NATIVE.cypher("[]"),
+						NATIVE.cypher("[]"),
 						END.caseXpr()
 				})).DO().SET(n.property("role")).to("Mother"),
 				RETURN.value(n)
 		};
-		
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "CASE_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		return;
 	}
 
 	@Test
-	public void testCase_01() {
+	public void testCase_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
-		
+
 		TestDataReader tdr = new TestDataReader("/test/Test_CASE_01.txt");
-		
+
 		JcNode n = new JcNode("n");
-		
+
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				MATCH.node(n).label("Person"),
 				WHERE.valueOf(n.property("lastName")).EQUALS("Smith"),
 				RETURN.value(n),
 				CASE.resultOf(n.property("firstName")),
 				WHEN.value().EQUALS("John"),
-					NATIVE.cypher("1"),
+				NATIVE.cypher("1"),
 				WHEN.value().EQUALS("Angelina"),
-					NATIVE.cypher("2"),
+				NATIVE.cypher("2"),
 				ELSE.perform(),
-					NATIVE.cypher("-1"),
+				NATIVE.cypher("-1"),
 				END.caseXpr()
 		};
-		
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "CASE_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		clauses = new IClause[] {
+		clauses = new IClause[]{
 				MATCH.node(n).label("Person"),
 				WHERE.valueOf(n.property("lastName")).EQUALS("Smith"),
 				RETURN.value(n),
 				CASE.result(),
 				WHEN.valueOf(n.property("firstName")).EQUALS("John"),
-					NATIVE.cypher("1"),
+				NATIVE.cypher("1"),
 				WHEN.valueOf(n.property("firstName")).EQUALS("Angelina"),
-					NATIVE.cypher("2"),
+				NATIVE.cypher("2"),
 				ELSE.perform(),
-					NATIVE.cypher("-1"),
+				NATIVE.cypher("-1"),
 				END.caseXpr()
 		};
-		
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "CASE_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		JcNumber res = new JcNumber("result");
-		
-		clauses = new IClause[] {
+
+		clauses = new IClause[]{
 				MATCH.node(n).label("Person"),
 				WHERE.valueOf(n.property("lastName")).EQUALS("Smith"),
 				RETURN.value(n),
 				CASE.result(),
 				WHEN.valueOf(n.property("firstName")).EQUALS("John"),
-					NATIVE.cypher("1"),
+				NATIVE.cypher("1"),
 				WHEN.valueOf(n.property("firstName")).EQUALS("Angelina"),
-					NATIVE.cypher("2"),
+				NATIVE.cypher("2"),
 				ELSE.perform(),
-					NATIVE.cypher("-1"),
+				NATIVE.cypher("-1"),
 				END.caseXpr().AS(res)
 		};
-		
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "CASE_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		return;
 	}
-	
+
 	@Test
-	public void testStart_01() {
+	public void testStart_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
-		
+
 		TestDataReader tdr = new TestDataReader("/test/Test_START_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcNode n1 = new JcNode("n1");
 		JcRelation r = new JcRelation("r");
@@ -317,7 +291,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		IClause start = START.node(n).byIndex("Persons").property("name")
 				.value("Tobias");
-		
+
 		result = print(start, Format.PRETTY_1);
 		testId = "START_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -325,51 +299,51 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		start = START.relation(r).byIndex("Addresses").property("type")
 				.value("delivery");
-		
+
 		result = print(start, Format.PRETTY_1);
 		testId = "START_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
 		start = START.node(n).byIndex("Persons").query("name:A");
-		
+
 		result = print(start, Format.PRETTY_1);
 		testId = "START_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
 		start = START.node(n1).byId(0, 1);
-		
+
 		result = print(start, Format.PRETTY_1);
 		testId = "START_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
 		start = START.relation(r).byId(2, 3);
-		
+
 		result = print(start, Format.PRETTY_1);
 		testId = "START_05";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
 		start = START.node(n).all();
-		
+
 		result = print(start, Format.PRETTY_1);
 		testId = "START_06";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
 		start = START.relation(r).all();
-		
+
 		result = print(start, Format.PRETTY_1);
 		testId = "START_07";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				START.node(n).byIndex("Persons").property("name").value("Tobias"),
-				START.relation(r).byId(2, 3) };
-		
+				START.relation(r).byId(2, 3)};
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "START_08";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -377,14 +351,15 @@ public class ClauseTest extends AbstractTestSuite {
 	}
 
 	@Test
-	public void testMatch_01() {
+	public void testMatch_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
-		
+
 		TestDataReader tdr = new TestDataReader("/test/Test_MATCH_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcNode x = new JcNode("x");
 		JcNode movie = new JcNode("movie");
@@ -397,22 +372,22 @@ public class ClauseTest extends AbstractTestSuite {
 		JcNode co_actor = new JcNode("co_actor");
 		JcNode michael = new JcNode("michael");
 		JcNode oliver = new JcNode("oliver");
-		
+
 		JcRelation r = new JcRelation("r");
 		JcRelation charly_martin = new JcRelation("charly_martin");
-		
+
 		JcPath p = new JcPath("p");
 
 		/*******************************/
 		IClause match = MATCH.node(n);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
 		match = MATCH.node(movie).label("Movie");
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -420,7 +395,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		match = MATCH.node(director).property("name").value("Oliver Stone")
 				.relation().node(movie);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -428,7 +403,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		match = MATCH.node(charlie).label("Person").property("name")
 				.value("Charlie Sheen").relation().node(movie).label("Movie");
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -436,7 +411,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		match = MATCH.node(martin).property("name").value("Martin Sheen")
 				.relation().out().node(movie);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_05";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -444,7 +419,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		match = MATCH.node(martin).property("name").value("Martin Sheen")
 				.relation(r).out().node(movie);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_06";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -452,7 +427,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		match = MATCH.node(wallstreet).property("title").value("Wall Street")
 				.relation().in().type("ACTED_IN").node(actor);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_07";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -461,7 +436,7 @@ public class ClauseTest extends AbstractTestSuite {
 		match = MATCH.node(wallstreet).property("title").value("Wall Street")
 				.relation().in().type("ACTED_IN").type("DIRECTED")
 				.node(person);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_08";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -469,7 +444,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		match = MATCH.node(wallstreet).property("title").value("Wall Street")
 				.relation(r).in().type("ACTED_IN").node(actor);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_09";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -478,7 +453,7 @@ public class ClauseTest extends AbstractTestSuite {
 		match = MATCH.node(charlie).property("name").value("Charlie Sheen")
 				.relation().out().type("ACTED_IN").node(movie).relation()
 				.in().type("DIRECTED").node(director);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_10";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -486,7 +461,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		match = MATCH.node(martin).property("name").value("Martin Sheen")
 				.relation().type("ACTED_IN").maxHops(2).node(x);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_11";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -498,7 +473,7 @@ public class ClauseTest extends AbstractTestSuite {
 				.value(false).node(martin).label("Person")
 				.property("firstName").value("Martin").property("lastName")
 				.value("Sheen");
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_12";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -506,7 +481,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		match = MATCH.node(actor).property("name").value("Martin Sheen")
 				.relation(r).type("ACTED_IN").maxHops(2).node(co_actor);
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_13";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -514,84 +489,86 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		match = MATCH.path(p).node(michael).property("name")
 				.value("Michael Douglas").relation().out().node();
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "MATCH_14";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				MATCH.node(martin).label("Person").property("name")
 						.value("Martin Sheen"),
 				MATCH.node(oliver).label("Person").property("name")
 						.value("Oliver Stone"),
 				MATCH.shortestPath(p).node(martin).relation().minHops(0)
-						.maxHops(15).node(oliver) };
-		
+						.maxHops(15).node(oliver)};
+
 		result = print(clauses, Format.PRETTY_3);
 		testId = "MATCH_15";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
-		clauses = new IClause[] {
+		clauses = new IClause[]{
 				MATCH.node(martin).label("Person").property("name")
 						.value("Martin Sheen"),
 				MATCH.node(michael).label("Person").property("name")
 						.value("Michael Douglas"),
 				MATCH.allShortestPaths(p).node(martin).relation()
-						.hopsUnbound().node(michael) };
-		
+						.hopsUnbound().node(michael)};
+
 		result = print(clauses, Format.PRETTY_3);
 		testId = "MATCH_16";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testOptionalMatch_01() {
+	public void testOptionalMatch_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
-		
+
 		TestDataReader tdr = new TestDataReader("/test/Test_OPTIONAL_MATCH_01.txt");
-		
+
 		JcNode a = new JcNode("a");
 		JcRelation r = new JcRelation("r");
-		
+
 		/*******************************/
 		IClause match = OPTIONAL_MATCH.node(a).relation(r).out().type("ACTS_IN").node();
-		
+
 		result = print(match, Format.PRETTY_1);
 		testId = "OPTIONAL_MATCH_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
 
 	@Test
-	public void testWhere_01() {
+	public void testWhere_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
-		
+
 		TestDataReader tdr = new TestDataReader("/test/Test_WHERE_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcNode m = new JcNode("m");
 		JcNode nd = new JcNode("nd");
 		JcNode tobias = new JcNode("tobias");
 		JcNode others = new JcNode("others");
 		JcNode charlie = new JcNode("charlie");
-		
+
 		JcRelation r = new JcRelation("r");
-		
+
 		JcPath p = new JcPath("p");
 
 		/*******************************/
 		IClause where = WHERE.valueOf(charlie.property("firstName"))
 				.EQUALS("charlie").AND().valueOf(charlie.property("lastName"))
 				.EQUALS("sheen").OR().BR_OPEN().valueOf(charlie
-				.property("lastName")).EQUALS("Huber").BR_CLOSE();
-		
+						.property("lastName")).EQUALS("Huber").BR_CLOSE();
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -602,35 +579,35 @@ public class ClauseTest extends AbstractTestSuite {
 				.EQUALS("sheen").BR_CLOSE().OR().NOT().BR_OPEN()
 				.valueOf(charlie.property("lastName")).EQUALS("Huber")
 				.BR_CLOSE();
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
 		where = WHERE.has(n.label("Swedish"));
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
 		where = WHERE.valueOf(n.property("age")).LT(30);
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
-		where = WHERE.	has(n.property("belt"));
-		
+		where = WHERE.has(n.property("belt"));
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_05";
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
 		where = WHERE.valueOf(n.property("name")).REGEX("Tob.*");
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_06";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -639,7 +616,7 @@ public class ClauseTest extends AbstractTestSuite {
 		where = WHERE.valueOf(others.property("name")).IN_list("Andreas", "Peter")
 				.AND()
 				.existsPattern(X.node(tobias).relation().in().node(others));
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_07";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -647,7 +624,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		where = WHERE.valueOf(n.property("name")).EQUALS("Andres").AND()
 				.valueOf(r.type()).REGEX("K.*");
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_08";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -655,67 +632,68 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		where = WHERE.valueOf(n.property("belt")).EQUALS("white").OR()
 				.valueOf(n.property("belt")).IS_NULL();
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_09";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		where = WHERE.valueOf(n.property("name")).EQUALS(m.property("name")).AND()
 				.valueOf(r.type()).REGEX("K.*");
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_10";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		where = WHERE.valueOf(others.property("name")).IN(C.EXTRACT().valueOf(nd.property("name")).fromAll(nd).IN_nodes(p));
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_11";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		where = WHERE.valueOf(n).IN(p.nodes());
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_12";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		where = WHERE.valueOf(r).IN(p.relations());
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_13";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		where = WHERE.valueOf(tobias.property("labelProp")).IN(n.labels());
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_14";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		where = WHERE.valueOf(charlie.property("firstName"))
 				.STARTS_WITH("ch").OR().valueOf(charlie.property("lastName"))
 				.ENDS_WITH("en").OR().valueOf(charlie
-				.property("lastName")).CONTAINS("ee");
-		
+						.property("lastName")).CONTAINS("ee");
+
 		result = print(where, Format.PRETTY_1);
 		testId = "WHERE_15";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
 
 	@Test
-	public void testPredicateFunctions_Where_01() {
+	public void testPredicateFunctions_Where_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
-		
+
 		TestDataReader tdr = new TestDataReader("/test/Test_PF_WHERE_01.txt");
-		
+
 		JcValue x = new JcValue("x");
 		JcNode var = new JcNode("var");
 		JcNode n = new JcNode("n");
@@ -725,7 +703,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		IClause where = WHERE.holdsTrue(I.forAll(x).IN_list("AB", "BC", 1234)
 				.WHERE().valueOf(x).REGEX("A.*"));
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "PF_WHERE_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -733,7 +711,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		where = WHERE.holdsTrue(I.forAll(n).IN_nodes(p).WHERE()
 				.valueOf(n.property("age")).GT(30));
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "PF_WHERE_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -741,7 +719,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		where = WHERE.holdsTrue(I.forAny(x).IN(a.collectionProperty("array")).WHERE()
 				.valueOf(x).EQUALS("one"));
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "PF_WHERE_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -749,7 +727,7 @@ public class ClauseTest extends AbstractTestSuite {
 		/*******************************/
 		where = WHERE.holdsTrue(I.forNone(n).IN(p.nodes()).WHERE()
 				.valueOf(n.property("age")).EQUALS(25));
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "PF_WHERE_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
@@ -763,21 +741,22 @@ public class ClauseTest extends AbstractTestSuite {
 				.holdsTrue(
 						I.forSingle(var).IN_nodes(p).WHERE()
 								.valueOf(var.property("eyes")).EQUALS("blue")).BR_CLOSE();
-		
+
 		result = print(where, Format.PRETTY_1);
 		testId = "PF_WHERE_05";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
 
 	@Test
-	public void testReturn_01() {
+	public void testReturn_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_RETURN_01.txt");
-		
+
 		JcNode a = new JcNode("a");
 		JcNode b = new JcNode("b");
 		JcNode n = new JcNode("n");
@@ -787,7 +766,7 @@ public class ClauseTest extends AbstractTestSuite {
 		JcCollection uniqueRelations = new JcCollection("UniqueRelations");
 		JcString personName = new JcString("personName");
 		JcNode thePerson = new JcNode("thePerson");
-		
+
 
 		/*******************************/
 		IClause returns = RETURN.value(n);
@@ -826,9 +805,9 @@ public class ClauseTest extends AbstractTestSuite {
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				RETURN.evalPredicate(P.valueOf(a.property("age")).GT(30)),
-				RETURN.existsPattern(X.node(a).relation().out().node()).AS(alias) };
+				RETURN.existsPattern(X.node(a).relation().out().node()).AS(alias)};
 		result = print(clauses, Format.PRETTY_3);
 
 		testId = "RETURN_06";
@@ -878,87 +857,87 @@ public class ClauseTest extends AbstractTestSuite {
 		assertQuery(testId, result, tdr.getTestData(testId));
 
 		/*******************************/
-		clauses = new IClause[] {
+		clauses = new IClause[]{
 				RETURN.value(n.property("name")).AS(personName),
 				RETURN.value(n).AS(thePerson).ORDER_BY("age")
-						.ORDER_BY_DESC("name").LIMIT(3).SKIP(1) };
+						.ORDER_BY_DESC("name").LIMIT(3).SKIP(1)};
 		result = print(clauses, Format.PRETTY_2);
 
 		testId = "RETURN_13";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.count().value(p.nodes());
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "RETURN_14";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.aggregate().sum(n.property("age"));
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "RETURN_15";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.aggregate().avg(n.property("age"));
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "RETURN_16";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.aggregate().percentileDisc(0.5).over(n.property("age"));
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "RETURN_17";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.aggregate().percentileCont(0.4).over(n.property("age"));
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "RETURN_18";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.aggregate().stdev(n.property("age"));
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "RETURN_19";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.aggregate().stdevp(n.property("age"));
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "RETURN_20";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.aggregate().max(n.property("age"));
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "RETURN_21";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.aggregate().min(n.property("age"));
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "RETURN_22";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		clauses = new IClause[] {
+		clauses = new IClause[]{
 				MATCH.node(a).label("Person").property("name").value("A").relation().out().node(b),
-				RETURN.count().DISTINCT().value(b.property("eyeColor")) };
+				RETURN.count().DISTINCT().value(b.property("eyeColor"))};
 		result = print(clauses, Format.PRETTY_1);
 
 		testId = "RETURN_23";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.aggregate().DISTINCT().sum(n.property("value"));
 
@@ -968,14 +947,15 @@ public class ClauseTest extends AbstractTestSuite {
 	}
 
 	@Test
-	public void testReturn_Collection_01() {
+	public void testReturn_Collection_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_RETURN_COLLECTION_01.txt");
-		
+
 		JcCollection x = new JcCollection("x");
 		JcCollection nds = new JcCollection("nds");
 		JcCollection friends = new JcCollection("friends");
@@ -999,7 +979,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.EXTRACT().valueOf(n.property("name")).fromAll(n).IN(nds)
@@ -1008,7 +988,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.EXTRACT().valueOf(n.property("age")).fromAll(n).IN_nodes(p)
@@ -1017,7 +997,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.EXTRACT().valueOf(n.property("age")).fromAll(n).IN(p.nodes())
@@ -1026,19 +1006,19 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.FILTER().fromAll(x).IN(a.collectionProperty("array")).WHERE().
-				BR_OPEN().valueOf(x.length()).EQUALS(3).OR().valueOf(x.length()).GT(5).
-				BR_CLOSE().AND().NOT().
-				BR_OPEN().valueOf(x).EQUALS("hallo").BR_CLOSE()
+						BR_OPEN().valueOf(x.length()).EQUALS(3).OR().valueOf(x.length()).GT(5).
+						BR_CLOSE().AND().NOT().
+						BR_OPEN().valueOf(x).EQUALS("hallo").BR_CLOSE()
 		);
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_05";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.TAIL(p.nodes())
@@ -1047,7 +1027,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_06";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.TAIL().TAIL().COLLECT().property("name").from(nds)
@@ -1056,7 +1036,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_07";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.TAIL().EXTRACT().valueOf(n.property("age")).fromAll(n).IN_nodes(p)
@@ -1065,7 +1045,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_08";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.TAIL().COLLECT().property("name").from(friends)
@@ -1074,18 +1054,18 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_09";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.TAIL().FILTER().fromAll(n)
-				.IN(C.FILTER().fromAll(y).IN_nodes(p).WHERE().valueOf(y.property("name")).EQUALS("Hans"))
-				.WHERE().valueOf(n.property("age")).GT(30)
+						.IN(C.FILTER().fromAll(y).IN_nodes(p).WHERE().valueOf(y.property("name")).EQUALS("Hans"))
+						.WHERE().valueOf(n.property("age")).GT(30)
 		);
 
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_10";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.FILTER().fromAll(r).IN(p.relations()).WHERE().has(r.property("name"))
@@ -1094,7 +1074,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_11";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.FILTER().fromAll(r).IN_relations(p).WHERE().has(r.property("name"))
@@ -1103,7 +1083,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_12";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.FILTER().fromAll(r).IN_relations(p).WHERE().NOT().valueOf(r.property("name")).IS_NULL()
@@ -1112,7 +1092,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_13";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				a.labels()
@@ -1121,7 +1101,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_14";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.FILTER().fromAll(label).IN(n.labels()).WHERE().valueOf(label).EQUALS("Address")
@@ -1130,7 +1110,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_15";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.FILTER().fromAll(label).IN_labels(n).WHERE().valueOf(label).EQUALS("Address")
@@ -1139,7 +1119,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_16";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.FILTER().fromAll(n).IN_nodes(p).WHERE().has(n.label("Person"))
@@ -1148,76 +1128,77 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_17";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.REDUCE().fromAll(n).IN_nodes(p).to(totalAge).by(totalAge.plus(n.numberProperty("age"))).startWith(0)
 		)
-		.AS(reduction);
+				.AS(reduction);
 
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_18";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.REDUCE().fromAll(n).IN(
 						C.TAIL(p.nodes()))
-				.to(totalAge).by(totalAge.plus(n.numberProperty("age"))).startWith(0)
+						.to(totalAge).by(totalAge.plus(n.numberProperty("age"))).startWith(0)
 		)
-		.AS(reduction);
+				.AS(reduction);
 
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_19";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.REDUCE().fromAll(n).IN_nodes(p).to(totalAmount).by(totalAmount.plus(n.numberProperty("amount")))
-				.startWith(a.property("amount"))
+						.startWith(a.property("amount"))
 		)
-		.AS(reduction);
+				.AS(reduction);
 
 		result = print(returns, Format.PRETTY_2);
 		testId = "COLLECTION_20";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.DISTINCT().evalPredicate(
 				C.FILTER().fromAll(x).IN(a.collectionProperty("array")).WHERE().
-				BR_OPEN().valueOf(x.length()).EQUALS(3).OR().valueOf(x.length()).GT(5).
-				BR_CLOSE().AND().NOT().
-				BR_OPEN().valueOf(x).EQUALS("hallo").BR_CLOSE()
+						BR_OPEN().valueOf(x.length()).EQUALS(3).OR().valueOf(x.length()).GT(5).
+						BR_CLOSE().AND().NOT().
+						BR_OPEN().valueOf(x).EQUALS("hallo").BR_CLOSE()
 		);
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_21";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		returns = RETURN.collection(
 				C.EXTRACT().valueOf(n.numberProperty("amount1").plus(n.numberProperty("amount2"))).fromAll(n).IN_nodes(p)
 		)
-		.AS(totalAmounts);
+				.AS(totalAmounts);
 
 		result = print(returns, Format.PRETTY_1);
 		testId = "COLLECTION_22";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 	}
 
 	/**
 	 * WITH provides the same expressions as RETURN
 	 */
 	@Test
-	public void testWith_01() {
+	public void testWith_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_WITH_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcString resultName = new JcString("resultName");
 		JcString personName = new JcString("personName");
@@ -1236,28 +1217,29 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(with, Format.PRETTY_1);
 		testId = "WITH_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				WITH.value(n.property("name")).AS(personName),
 				WITH.value(n).AS(thePerson).ORDER_BY("age")
-						.ORDER_BY_DESC("name").LIMIT(3).SKIP(1) };
+						.ORDER_BY_DESC("name").LIMIT(3).SKIP(1)};
 		result = print(clauses, Format.PRETTY_2);
 
 		testId = "WITH_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testForEach_01() {
+	public void testForEach_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_FOREACH_01.txt");
-		
+
 		JcValue val = new JcValue("val");
 		JcValue a = new JcValue("a");
 		JcNode n = new JcNode("n");
@@ -1266,9 +1248,9 @@ public class ClauseTest extends AbstractTestSuite {
 		JcNode actor = new JcNode("actor");
 		JcRelation r = new JcRelation("r");
 		JcPath p = new JcPath("p");
-		
+
 		JcCollection coll = new JcCollection("coll");
-		
+
 		JcValue x = new JcValue("x");
 
 		/*******************************/
@@ -1279,7 +1261,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(foreach, Format.PRETTY_1);
 		testId = "FOREACH_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		foreach = FOR_EACH.element(r).IN_relations(p).DO()
 				.SET(r.property("marked")).to(true);
@@ -1287,7 +1269,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(foreach, Format.PRETTY_1);
 		testId = "FOREACH_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		foreach = FOR_EACH.element(val).IN_list("a", "b", "c").
 				DO().
@@ -1296,7 +1278,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(foreach, Format.PRETTY_1);
 		testId = "FOREACH_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		foreach = FOR_EACH.element(a).IN_list("Neo", "{name: \"Keanu\"}", 1234).DO().
 				CREATE_UNIQUE(X.node(movie).relation().out().node(actor)).AND_DO().
@@ -1305,7 +1287,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(foreach, Format.PRETTY_1);
 		testId = "FOREACH_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		foreach = FOR_EACH.element(n).IN_nodes(p).DO()
 				.FOR_EACH(F.element(x).IN_list("Stan", "Will", "Henry").DO().
@@ -1314,7 +1296,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(foreach, Format.PRETTY_1);
 		testId = "FOREACH_05";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		foreach = FOR_EACH.element(n).IN_nodes(p).DO()
 				.DELETE(n);
@@ -1322,7 +1304,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(foreach, Format.PRETTY_1);
 		testId = "FOREACH_06";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		foreach = FOR_EACH.element(r).IN_relations(p).DO()
 				.DELETE(r);
@@ -1330,7 +1312,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(foreach, Format.PRETTY_1);
 		testId = "FOREACH_07";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		foreach = FOR_EACH.element(n).IN_nodes(p).DO()
 				.REMOVE(n.property("age"));
@@ -1338,7 +1320,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(foreach, Format.PRETTY_1);
 		testId = "FOREACH_08";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		foreach = FOR_EACH.element(n).IN_nodes(p).DO()
 				.copyPropertiesFrom(source).to(n);
@@ -1346,7 +1328,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(foreach, Format.PRETTY_1);
 		testId = "FOREACH_09";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		foreach = FOR_EACH.element(n).IN_nodes(p).DO()
 				.DETACH_DELETE(n);
@@ -1355,25 +1337,26 @@ public class ClauseTest extends AbstractTestSuite {
 		testId = "FOREACH_10";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testCreate_01() {
+	public void testCreate_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_CREATE_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcNode a = new JcNode("a");
 		JcNode b = new JcNode("b");
 		JcNode andres = new JcNode("andres");
 		JcNode neo = new JcNode("neo");
 		JcNode michael = new JcNode("michael");
-		
+
 		JcRelation r = new JcRelation("r");
-		
+
 		JcPath p = new JcPath("p");
 
 		/*******************************/
@@ -1382,28 +1365,28 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(create, Format.PRETTY_1);
 		testId = "CREATE_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		create = CREATE.node(n).label("Person");
 
 		result = print(create, Format.PRETTY_1);
 		testId = "CREATE_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		create = CREATE.node(n).label(Labels.Person);
 
 		result = print(create, Format.PRETTY_1);
 		testId = "CREATE_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		create = CREATE.node(n).label("Person").label("Swedish");
 
 		result = print(create, Format.PRETTY_1);
 		testId = "CREATE_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		create = CREATE.node(n).label("Person").
 				property("name").value("Andres").
@@ -1412,14 +1395,14 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(create, Format.PRETTY_1);
 		testId = "CREATE_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		create = CREATE.node(a).relation(r).out().type("RELTYPE").node(b);
 
 		result = print(create, Format.PRETTY_1);
 		testId = "CREATE_05";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		create = CREATE.node(a).relation(r).out().type("RELTYPE").
 				property("name")
@@ -1429,7 +1412,7 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(create, Format.PRETTY_1);
 		testId = "CREATE_06";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		create = CREATE.path(p).
 				node(andres).property("name").value("Andres").
@@ -1440,20 +1423,20 @@ public class ClauseTest extends AbstractTestSuite {
 		result = print(create, Format.PRETTY_1);
 		testId = "CREATE_07";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				CREATE.node(a).relation(r).out().type("RELTYPE").node(b),
 				CREATE.path(p).
-				node(andres).property("name").value("Andres").
-				relation().out().type("WORKS_AT").node(neo).
-				relation().in().type("WORKS_AT").
-				node(michael).property("name").value("Micheal") };
+						node(andres).property("name").value("Andres").
+						relation().out().type("WORKS_AT").node(neo).
+						relation().in().type("WORKS_AT").
+						node(michael).property("name").value("Micheal")};
 		result = print(clauses, Format.PRETTY_3);
 
 		testId = "CREATE_08";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		create = CREATE.node(n).label("Person").
 				property("numbers").values(1, 2, 3);
@@ -1462,75 +1445,77 @@ public class ClauseTest extends AbstractTestSuite {
 		testId = "CREATE_09";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testCreateUnique_01() {
+	public void testCreateUnique_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_CREATE_U_01.txt");
-		
+
 		JcNode a = new JcNode("a");
 		JcNode b = new JcNode("b");
 		JcNode andres = new JcNode("andres");
 		JcNode neo = new JcNode("neo");
 		JcNode michael = new JcNode("michael");
-		
+
 		JcRelation r = new JcRelation("r");
-		
+
 		JcPath p = new JcPath("p");
-		
+
 		/*******************************/
 		IClause create = CREATE_UNIQUE.node(a).relation(r).out().type("RELTYPE").node(b);
 
 		result = print(create, Format.PRETTY_1);
 		testId = "CREATE_U_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				CREATE_UNIQUE.node(a).relation(r).out().type("RELTYPE").node(b),
 				CREATE_UNIQUE.path(p).
-				node(andres).property("name").value("Andres").
-				relation().out().type("WORKS_AT").node(neo).
-				relation().in().type("WORKS_AT").
-				node(michael).property("name").value("Micheal") };
+						node(andres).property("name").value("Andres").
+						relation().out().type("WORKS_AT").node(neo).
+						relation().in().type("WORKS_AT").
+						node(michael).property("name").value("Micheal")};
 		result = print(clauses, Format.PRETTY_3);
 
 		testId = "CREATE_U_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testUse_01() {
+	public void testUse_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_USE_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcNode m = new JcNode("m");
-		
+
 		/*******************************/
 		IClause use = USING.INDEX("Swedish").on(n.property("surname"));
 
 		result = print(use, Format.PRETTY_1);
 		testId = "USE_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				USING.INDEX("German").on(m.property("surname")),
-				USING.INDEX("Swedish").on(n.property("surname")) };
+				USING.INDEX("Swedish").on(n.property("surname"))};
 		result = print(clauses, Format.PRETTY_1);
 
 		testId = "USE_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		use = USING.LABEL_SCAN("German").on(m);
 
@@ -1538,193 +1523,197 @@ public class ClauseTest extends AbstractTestSuite {
 		testId = "USE_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testSet_01() {
+	public void testSet_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_SET_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcNode m = new JcNode("m");
 		JcNode sum = new JcNode("sum");
 		JcNode at = new JcNode("at");
 		JcNode pn = new JcNode("pn");
-		
+
 		/*******************************/
 		IClause set = DO.SET(n.property("surname")).to("Taylor");
 
 		result = print(set, Format.PRETTY_1);
 		testId = "SET_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		set = DO.SET(sum.property("amount"))
-						.byExpression(n.numberProperty("amount").plus(m.numberProperty("amount")));
+				.byExpression(n.numberProperty("amount").plus(m.numberProperty("amount")));
 
 		result = print(set, Format.PRETTY_1);
 		testId = "SET_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		set = DO.SET(n.property("name")).toNull();
 
 		result = print(set, Format.PRETTY_1);
 		testId = "SET_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		set = DO.copyPropertiesFrom(pn).to(at);
 
 		result = print(set, Format.PRETTY_1);
 		testId = "SET_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		set = DO.SET(n.label("German"));
 
 		result = print(set, Format.PRETTY_1);
 		testId = "SET_05";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		set = DO.SET(n.label("Swedish").label("Bossman"));
 
 		result = print(set, Format.PRETTY_1);
 		testId = "SET_06";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		JcRelation r = new JcRelation("r");
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				DO.SET(r.property("views")).to(1),
 				DO.SET(r.property("created")).byExpression(JC.timeStamp()),
 		};
-		
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "SET_07";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		clauses = new IClause[] {
+		clauses = new IClause[]{
 				DO.SET(r.property("views")).to(1),
 				SEPARATE.nextClause(),
 				DO.SET(r.property("created")).byExpression(JC.timeStamp())
 		};
-		
+
 		result = print(clauses, Format.PRETTY_1);
 		testId = "SET_08";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testDelete_01() {
+	public void testDelete_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_DELETE_01.txt");
-		
+
 		JcNode n = new JcNode("n");
 		JcNode m = new JcNode("m");
 		JcRelation r = new JcRelation("r");
-		
+
 		/*******************************/
 		IClause delete = DO.DELETE(n);
 
 		result = print(delete, Format.PRETTY_1);
 		testId = "DELETE_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				DO.DELETE(n),
-				DO.DELETE(r) };
+				DO.DELETE(r)};
 		result = print(clauses, Format.PRETTY_1);
 
 		testId = "DELETE_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		IClause detach_delete = DO.DETACH_DELETE(n);
 
 		result = print(detach_delete, Format.PRETTY_1);
 		testId = "DELETE_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		clauses = new IClause[] {
+		clauses = new IClause[]{
 				DO.DETACH_DELETE(n),
-				DO.DETACH_DELETE(m) };
+				DO.DETACH_DELETE(m)};
 		result = print(clauses, Format.PRETTY_1);
 
 		testId = "DELETE_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testRemove_01() {
+	public void testRemove_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_REMOVE_01.txt");
-		
+
 		JcNode andres = new JcNode("andres");
 		JcNode n = new JcNode("n");
-		
+
 		/*******************************/
 		IClause remove = DO.REMOVE(andres.property("age"));
 
 		result = print(remove, Format.PRETTY_1);
 		testId = "REMOVE_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		remove = DO.REMOVE(n.label("German"));
 
 		result = print(remove, Format.PRETTY_1);
 		testId = "REMOVE_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		remove = DO.REMOVE(n.label("German").label("Swedish"));
 
 		result = print(remove, Format.PRETTY_1);
 		testId = "REMOVE_03";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
-		IClause[] clauses = new IClause[] {
+		IClause[] clauses = new IClause[]{
 				DO.REMOVE(andres.property("age")),
-				DO.REMOVE(n.label("German").label("Swedish")) };
+				DO.REMOVE(n.label("German").label("Swedish"))};
 		result = print(clauses, Format.PRETTY_1);
 
 		testId = "REMOVE_04";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testIndex_01() {
+	public void testIndex_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_INDEX_01.txt");
-		
+
 		/*******************************/
 		IClause index = CREATE_INDEX.onLabel("Person").forProperty("name");
 
 		result = print(index, Format.PRETTY_1);
 		testId = "INDEX_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		index = DROP_INDEX.onLabel("Person").forProperty("name");
 
@@ -1732,16 +1721,17 @@ public class ClauseTest extends AbstractTestSuite {
 		testId = "INDEX_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testNative_01() {
+	public void testNative_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_NATIVE_01.txt");
-		
+
 		/*******************************/
 		IClause nativ = NATIVE.cypher(
 				"MERGE (keanu:Person { name:'Keanu Reeves' })",
@@ -1752,23 +1742,24 @@ public class ClauseTest extends AbstractTestSuite {
 		testId = "NATIVE_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
+
 	@Test
-	public void testUnion_01() {
+	public void testUnion_01()
+	{
 		String result;
 		String testId;
 		setDoPrint(true);
 		setDoAssert(true);
 
 		TestDataReader tdr = new TestDataReader("/test/Test_UNION_01.txt");
-		
+
 		/*******************************/
 		IClause union = UNION.distinct();
 
 		result = print(union, Format.PRETTY_1);
 		testId = "UNION_01";
 		assertQuery(testId, result, tdr.getTestData(testId));
-		
+
 		/*******************************/
 		union = UNION.all();
 
@@ -1776,8 +1767,9 @@ public class ClauseTest extends AbstractTestSuite {
 		testId = "UNION_02";
 		assertQuery(testId, result, tdr.getTestData(testId));
 	}
-	
-	public static enum Labels {
+
+	public static enum Labels
+	{
 		Person
 	}
 }

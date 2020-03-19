@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2016 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,20 +16,20 @@
 
 package iot.jcypher.domainquery.internal;
 
+import iot.jcypher.domainquery.internal.RecordedQuery.Literal;
+import iot.jcypher.domainquery.internal.RecordedQuery.Statement;
+
+import javax.json.JsonArray;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.json.JsonArray;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
-import iot.jcypher.domainquery.internal.RecordedQuery.Literal;
-import iot.jcypher.domainquery.internal.RecordedQuery.Statement;
-
-public class ConversionUtil {
+public class ConversionUtil
+{
 
 	private static final String STRING = "java.lang.String";
 	private static final String INTEGER = "java.lang.Integer";
@@ -38,28 +38,32 @@ public class ConversionUtil {
 	private static final String FLOAT = "java.lang.Float";
 	private static final String DOUBLE = "java.lang.Double";
 	private static final String BOOL = "java.lang.Boolean";
-	
+
 	private static final String P_INTEGER = "int";
 	private static final String P_SHORT = "short";
 	private static final String P_LONG = "long";
 	private static final String P_FLOAT = "float";
 	private static final String P_DOUBLE = "double";
 	private static final String P_BOOL = "boolean";
-	
+
 	private static final String ARRAY = "Array(";
-	
-	public static Object fromJSON(String type, JsonValue jsonValue) {
+
+	public static Object fromJSON(String type, JsonValue jsonValue)
+	{
 		Object val;
-		if (jsonValue instanceof JsonArray) {
-			val = ConversionUtil.fromList(type, (JsonArray)jsonValue);
-		} else {
-			String lVal = ((JsonString)jsonValue).getString();
+		if (jsonValue instanceof JsonArray)
+		{
+			val = ConversionUtil.fromList(type, (JsonArray) jsonValue);
+		} else
+		{
+			String lVal = ((JsonString) jsonValue).getString();
 			val = ConversionUtil.from(type, lVal);
 		}
 		return val;
 	}
-	
-	public static Object from(String type, String value) {
+
+	public static Object from(String type, String value)
+	{
 		if (STRING.equals(type))
 			return value;
 		else if (INTEGER.equals(type))
@@ -77,44 +81,54 @@ public class ConversionUtil {
 
 		return null;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public static Object fromList(String type, JsonArray jsonArray) {
-		try {
-			if (type.startsWith(ARRAY)) {
+	public static Object fromList(String type, JsonArray jsonArray)
+	{
+		try
+		{
+			if (type.startsWith(ARRAY))
+			{
 				String compType = type.substring(type.indexOf('(') + 1);
 				compType = compType.substring(0, compType.indexOf(')'));
 				Class<?> cls = null;
-				try {
+				try
+				{
 					cls = Class.forName(compType);
-				} catch (ClassNotFoundException ce) {
+				} catch (ClassNotFoundException ce)
+				{
 					cls = getPrimitiveClass(compType);
 				}
 				int sz = jsonArray.size();
 				Object arr = Array.newInstance(cls, sz);
-				for (int i = 0; i < sz; i++) {
+				for (int i = 0; i < sz; i++)
+				{
 					addToArray(jsonArray.get(i), arr, i);
 				}
 				return arr;
-			} else {
+			} else
+			{
 				Class<?> cls = Class.forName(type);
 				Collection coll = (Collection) cls.newInstance();
 				Iterator<JsonValue> it = jsonArray.iterator();
-				while(it.hasNext()) {
+				while (it.hasNext())
+				{
 					JsonValue jVal = it.next();
 					addToCollection(jVal, coll);
 				}
 				return coll;
 			}
-		} catch(Throwable e) {
+		} catch (Throwable e)
+		{
 			if (e instanceof RuntimeException)
-				throw (RuntimeException)e;
+				throw (RuntimeException) e;
 			else
 				throw new RuntimeException(e);
 		}
 	}
-	
-	private static Class<?> getPrimitiveClass(String compType) {
+
+	private static Class<?> getPrimitiveClass(String compType)
+	{
 		if (P_INTEGER.equals(compType))
 			return Integer.TYPE;
 		else if (P_SHORT.equals(compType))
@@ -130,24 +144,29 @@ public class ConversionUtil {
 		return null;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static void addToCollection(JsonValue jVal, Collection coll) {
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private static void addToCollection(JsonValue jVal, Collection coll)
+	{
 		Statement statement = convertStatement(jVal);
-		if (statement instanceof Literal) {
-			Object val = ((Literal)statement).getRawValue();
+		if (statement instanceof Literal)
+		{
+			Object val = ((Literal) statement).getRawValue();
 			coll.add(val);
 		}
 	}
-	
-	private static void addToArray(JsonValue jVal, Object arr, int index) {
+
+	private static void addToArray(JsonValue jVal, Object arr, int index)
+	{
 		Statement statement = convertStatement(jVal);
-		if (statement instanceof Literal) {
-			Object val = ((Literal)statement).getRawValue();
+		if (statement instanceof Literal)
+		{
+			Object val = ((Literal) statement).getRawValue();
 			Array.set(arr, index, val);
 		}
 	}
-	
-	private static Statement convertStatement(JsonValue jVal) {
+
+	private static Statement convertStatement(JsonValue jVal)
+	{
 		RecordedQuery rq = new RecordedQuery(false);
 		JSONConverter jc = new JSONConverter();
 		List<Statement> statements = new ArrayList<Statement>();

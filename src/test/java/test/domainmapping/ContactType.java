@@ -1,6 +1,7 @@
 package test.domainmapping;
 
-public enum ContactType {
+public enum ContactType
+{
 
 	EMAIL, TELEPHONE
 }

@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,34 +17,41 @@
 package iot.jcypher.query.values;
 
 
-public abstract class JcPrimitive extends JcValue {
+public abstract class JcPrimitive extends JcValue
+{
 
 	private Object value;
-	
-	JcPrimitive() {
+
+	JcPrimitive()
+	{
 		super();
 	}
-	
-	JcPrimitive(Object val, ValueElement predecessor, IOperatorOrFunction opf) {
+
+	JcPrimitive(Object val, ValueElement predecessor, IOperatorOrFunction opf)
+	{
 		this(null, val, predecessor, opf);
 	}
-	
-	JcPrimitive(String name, Object val, ValueElement predecessor, IOperatorOrFunction opf) {
+
+	JcPrimitive(String name, Object val, ValueElement predecessor, IOperatorOrFunction opf)
+	{
 		super(name, predecessor, opf);
 		this.value = val;
 	}
-	
-	Object getValue() {
+
+	Object getValue()
+	{
 		return value;
 	}
 
-	void setValue(Object value) {
+	void setValue(Object value)
+	{
 		this.value = value;
 	}
-	
-	protected void copyShallowTo(ValueElement target) {
+
+	protected void copyShallowTo(ValueElement target)
+	{
 		super.copyShallowTo(target);
-		((JcPrimitive)target).value = this.value;
+		((JcPrimitive) target).value = this.value;
 	}
 
 }

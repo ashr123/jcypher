@@ -1,17 +1,21 @@
 package test.greg;
 
-public class App {
+public class App
+{
 
 	private String name;
-	
-	public App() {
+
+	public App()
+	{
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name)
+	{
 		this.name = name;
 	}
 

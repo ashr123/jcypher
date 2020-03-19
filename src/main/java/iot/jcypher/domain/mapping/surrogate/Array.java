@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,32 +20,38 @@ import iot.jcypher.domain.mapping.surrogate.ObservableList.IObserver;
 
 import java.util.List;
 
-public class Array extends AbstractSurrogate {
+public class Array extends AbstractSurrogate
+{
 
 	private Object[] a_content;
 	private transient List<Object> listContent;
 	private transient SurrogateState surrogateState;
 	private transient int size;
 	private transient Observer observer;
-	
-	public Array() {
+
+	public Array()
+	{
 		super();
 		this.size = -1;
 	}
 
-	public Array(Object[] a_content) {
+	public Array(Object[] a_content)
+	{
 		this();
 		this.a_content = a_content;
 	}
 
 	@Override
-	public Object[] getContent() {
-		if (this.a_content == null && this.listContent != null) {
+	public Object[] getContent()
+	{
+		if (this.a_content == null && this.listContent != null)
+		{
 			if (this.size == -1 && (this.listContent instanceof ObservableList<?>))
 				throw new RuntimeException("internal error array surrogate size");
 			if (this.size == -1 || this.listContent.size() == this.size)
 				this.a_content = this.listContent.toArray();
-			else {
+			else
+			{
 				this.a_content = new Object[this.size];
 				fill(this.a_content, this.listContent);
 			}
@@ -53,48 +59,60 @@ public class Array extends AbstractSurrogate {
 		}
 		return this.a_content;
 	}
-	
-	private void fill(Object[] a_content2, List<Object> listContent2) {
-		for (int i = 0; i < listContent2.size(); i++) {
+
+	public void setContent(Object[] content)
+	{
+		this.a_content = content;
+	}
+
+	private void fill(Object[] a_content2, List<Object> listContent2)
+	{
+		for (int i = 0; i < listContent2.size(); i++)
+		{
 			a_content2[i] = listContent2.get(i);
 		}
 	}
 
-	public void setContent(Object[] content) {
-		this.a_content = content;
-	}
-
-	public List<Object> getListContent() {
+	public List<Object> getListContent()
+	{
 		return listContent;
 	}
 
-	public void setListContent(List<Object> listContent) {
+	public void setListContent(List<Object> listContent)
+	{
 		this.listContent = listContent;
-		if (listContent instanceof ObservableList<?>) {
+		if (listContent instanceof ObservableList<?>)
+		{
 			if (this.observer == null)
 				this.observer = new Observer();
-			((ObservableList<Object>)listContent).addObserver(this.observer);
+			((ObservableList<Object>) listContent).addObserver(this.observer);
 		}
 	}
 
-	public void setSize(int size) {
+	public void setSize(int size)
+	{
 		this.size = size;
 	}
 
-	public void setSurrogateState(SurrogateState surrogateState) {
+	public void setSurrogateState(SurrogateState surrogateState)
+	{
 		this.surrogateState = surrogateState;
 	}
 
 	@Override
-	public Object objectToUpdate() {
+	public Object objectToUpdate()
+	{
 		return getListContent();
 	}
-	
-	private class Observer implements IObserver {
+
+	private class Observer implements IObserver
+	{
 
 		@Override
-		public void changed(ObservableList<?> list) {
-			if (a_content != null) {
+		public void changed(ObservableList<?> list)
+		{
+			if (a_content != null)
+			{
 				if (size < listContent.size())
 					throw new RuntimeException("internal error array surrogate size");
 				fill(a_content, listContent);

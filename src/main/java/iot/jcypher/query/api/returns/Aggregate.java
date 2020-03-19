@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,24 +18,27 @@ package iot.jcypher.query.api.returns;
 
 import iot.jcypher.query.api.APIObject;
 import iot.jcypher.query.ast.returns.ReturnAggregate;
-import iot.jcypher.query.ast.returns.ReturnExpression;
 import iot.jcypher.query.ast.returns.ReturnAggregate.AggregateFunctionType;
+import iot.jcypher.query.ast.returns.ReturnExpression;
 import iot.jcypher.query.values.JcProperty;
 
-public class Aggregate extends APIObject {
+public class Aggregate extends APIObject
+{
 
-	Aggregate(ReturnExpression rx) {
+	Aggregate(ReturnExpression rx)
+	{
 		super();
 		this.astNode = rx;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>sum all the numeric values which are encountered. NULLs are silently dropped</i></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...aggregate().<b>sum(n.property("amount"))</b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> sum(JcProperty property) {
+	public RElement<RElement<?>> sum(JcProperty property)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnAggregate ra = (ReturnAggregate) rx.getReturnValue();
 		ra.setType(AggregateFunctionType.SUM);
@@ -43,14 +46,15 @@ public class Aggregate extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i> calculate the average of numeric values</i></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...aggregate().<b>avg(n.property("amount"))</b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> avg(JcProperty property) {
+	public RElement<RElement<?>> avg(JcProperty property)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnAggregate ra = (ReturnAggregate) rx.getReturnValue();
 		ra.setType(AggregateFunctionType.AVG);
@@ -58,16 +62,17 @@ public class Aggregate extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i> calculate the standard deviation for a given value over a group;
-	 * <br/>uses a standard two-pass method, with N - 1 as the denominator, 
+	 * <br/>uses a standard two-pass method, with N - 1 as the denominator,
 	 * and should be used when taking a sample of the population for an unbiased estimate.</i></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...aggregate().<b>stdev(n.property("age"))</b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> stdev(JcProperty property) {
+	public RElement<RElement<?>> stdev(JcProperty property)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnAggregate ra = (ReturnAggregate) rx.getReturnValue();
 		ra.setType(AggregateFunctionType.STDEV);
@@ -75,16 +80,17 @@ public class Aggregate extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i> calculate the standard deviation for a given value over a group;
-	 * <br/>uses a standard two-pass method, with N - 1 as the denominator, 
+	 * <br/>uses a standard two-pass method, with N - 1 as the denominator,
 	 * and should be used when taking a sample of an entire population.</i></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...aggregate().<b>stdevp(n.property("age"))</b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> stdevp(JcProperty property) {
+	public RElement<RElement<?>> stdevp(JcProperty property)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnAggregate ra = (ReturnAggregate) rx.getReturnValue();
 		ra.setType(AggregateFunctionType.STDEVP);
@@ -92,14 +98,15 @@ public class Aggregate extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>find the largest value in a collection of numeric values</i></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...aggregate().<b>max(n.property("amount"))</b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> max(JcProperty property) {
+	public RElement<RElement<?>> max(JcProperty property)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnAggregate ra = (ReturnAggregate) rx.getReturnValue();
 		ra.setType(AggregateFunctionType.MAX);
@@ -107,14 +114,15 @@ public class Aggregate extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>find the smallest value in a collection of numeric values</i></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...aggregate().<b>min(n.property("amount"))</b></i></div>
 	 * <br/>
 	 */
-	public RElement<RElement<?>> min(JcProperty property) {
+	public RElement<RElement<?>> min(JcProperty property)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnAggregate ra = (ReturnAggregate) rx.getReturnValue();
 		ra.setType(AggregateFunctionType.MIN);
@@ -122,7 +130,7 @@ public class Aggregate extends APIObject {
 		RElement<RElement<?>> ret = new RElement<RElement<?>>(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>calculate: Given a series of values, which value is located at (or nearest to) a certain percentile (percent rank);</b></i></div>
@@ -130,7 +138,8 @@ public class Aggregate extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...aggregate().<b>percentileDisc(0.5)</b>...</i></div>
 	 * <br/>
 	 */
-	public Percentile percentileDisc(Number percentile) {
+	public Percentile percentileDisc(Number percentile)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnAggregate ra = (ReturnAggregate) rx.getReturnValue();
 		ra.setType(AggregateFunctionType.PERCENTILE_DISC);
@@ -138,7 +147,7 @@ public class Aggregate extends APIObject {
 		Percentile ret = new Percentile(rx);
 		return ret;
 	}
-	
+
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
 	 * <div color='red' style="font-size:18px;color:red"><i>calculate: Given a series of values, which value is located at a certain percentile (percent rank);</b></i></div>
@@ -147,7 +156,8 @@ public class Aggregate extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...aggregate().<b>percentileCont(0.5)</b>...</i></div>
 	 * <br/>
 	 */
-	public Percentile percentileCont(Number percentile) {
+	public Percentile percentileCont(Number percentile)
+	{
 		ReturnExpression rx = getReturnExpression();
 		ReturnAggregate ra = (ReturnAggregate) rx.getReturnValue();
 		ra.setType(AggregateFunctionType.PERCENTILE_CONT);
@@ -155,8 +165,9 @@ public class Aggregate extends APIObject {
 		Percentile ret = new Percentile(rx);
 		return ret;
 	}
-	
-	private ReturnExpression getReturnExpression() {
-		return (ReturnExpression)this.astNode;
+
+	private ReturnExpression getReturnExpression()
+	{
+		return (ReturnExpression) this.astNode;
 	}
 }

@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,11 +16,16 @@
 
 package iot.jcypher.util;
 
-public class Base64CD {
+public class Base64CD
+{
 
 	// Mapping table from 6-bit nibbles to Base64 characters.
 	private static char[] map1 = new char[64];
-	static {
+	// Mapping table from Base64 characters to 6-bit nibbles.
+	private static byte[] map2 = new byte[128];
+
+	static
+	{
 		int i = 0;
 		for (char c = 'A'; c <= 'Z'; c++)
 			map1[i++] = c;
@@ -32,9 +37,8 @@ public class Base64CD {
 		map1[i++] = '/';
 	}
 
-	// Mapping table from Base64 characters to 6-bit nibbles.
-	private static byte[] map2 = new byte[128];
-	static {
+	static
+	{
 		for (int i = 0; i < map2.length; i++)
 			map2[i] = -1;
 		for (int i = 0; i < 64; i++)
@@ -44,44 +48,44 @@ public class Base64CD {
 	/**
 	 * Encodes a string into Base64 format. No blanks or line breaks are
 	 * inserted.
-	 * 
-	 * @param s
-	 *            a String to be encoded.
+	 *
+	 * @param s a String to be encoded.
 	 * @return A String with the Base64 encoded data.
 	 */
-	public static String encodeString(String s) {
+	public static String encodeString(String s)
+	{
 		return new String(encode(s.getBytes()));
 	}
 
 	/**
 	 * Encodes a byte array into Base64 format. No blanks or line breaks are
 	 * inserted.
-	 * 
-	 * @param in
-	 *            an array containing the data bytes to be encoded.
+	 *
+	 * @param in an array containing the data bytes to be encoded.
 	 * @return A character array with the Base64 encoded data.
 	 */
-	public static char[] encode(byte[] in) {
+	public static char[] encode(byte[] in)
+	{
 		return encode(in, in.length);
 	}
 
 	/**
 	 * Encodes a byte array into Base64 format. No blanks or line breaks are
 	 * inserted.
-	 * 
-	 * @param in
-	 *            an array containing the data bytes to be encoded.
-	 * @param iLen
-	 *            number of bytes to process in <code>in</code>.
+	 *
+	 * @param in   an array containing the data bytes to be encoded.
+	 * @param iLen number of bytes to process in <code>in</code>.
 	 * @return A character array with the Base64 encoded data.
 	 */
-	public static char[] encode(byte[] in, int iLen) {
+	public static char[] encode(byte[] in, int iLen)
+	{
 		int oDataLen = (iLen * 4 + 2) / 3; // output length without padding
 		int oLen = ((iLen + 2) / 3) * 4; // output length including padding
 		char[] out = new char[oLen];
 		int ip = 0;
 		int op = 0;
-		while (ip < iLen) {
+		while (ip < iLen)
+		{
 			int i0 = in[ip++] & 0xff;
 			int i1 = ip < iLen ? in[ip++] & 0xff : 0;
 			int i2 = ip < iLen ? in[ip++] & 0xff : 0;
@@ -101,41 +105,38 @@ public class Base64CD {
 
 	/**
 	 * Decodes a string from Base64 format.
-	 * 
-	 * @param s
-	 *            a Base64 String to be decoded.
+	 *
+	 * @param s a Base64 String to be decoded.
 	 * @return A String containing the decoded data.
-	 * @throws IllegalArgumentException
-	 *             if the input is not valid Base64 encoded data.
+	 * @throws IllegalArgumentException if the input is not valid Base64 encoded data.
 	 */
-	public static String decodeString(String s) {
+	public static String decodeString(String s)
+	{
 		return new String(decode(s));
 	}
 
 	/**
 	 * Decodes a byte array from Base64 format.
-	 * 
-	 * @param s
-	 *            a Base64 String to be decoded.
+	 *
+	 * @param s a Base64 String to be decoded.
 	 * @return An array containing the decoded data bytes.
-	 * @throws IllegalArgumentException
-	 *             if the input is not valid Base64 encoded data.
+	 * @throws IllegalArgumentException if the input is not valid Base64 encoded data.
 	 */
-	public static byte[] decode(String s) {
+	public static byte[] decode(String s)
+	{
 		return decode(s.toCharArray());
 	}
 
 	/**
 	 * Decodes a byte array from Base64 format. No blanks or line breaks are
 	 * allowed within the Base64 encoded data.
-	 * 
-	 * @param in
-	 *            a character array containing the Base64 encoded data.
+	 *
+	 * @param in a character array containing the Base64 encoded data.
 	 * @return An array containing the decoded data bytes.
-	 * @throws IllegalArgumentException
-	 *             if the input is not valid Base64 encoded data.
+	 * @throws IllegalArgumentException if the input is not valid Base64 encoded data.
 	 */
-	public static byte[] decode(char[] in) {
+	public static byte[] decode(char[] in)
+	{
 		int iLen = in.length;
 		if (iLen % 4 != 0)
 			throw new IllegalArgumentException(
@@ -146,7 +147,8 @@ public class Base64CD {
 		byte[] out = new byte[oLen];
 		int ip = 0;
 		int op = 0;
-		while (ip < iLen) {
+		while (ip < iLen)
+		{
 			int i0 = in[ip++];
 			int i1 = in[ip++];
 			int i2 = ip < iLen ? in[ip++] : 'A';

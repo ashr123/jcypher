@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,44 +20,53 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-public class DateHolder {
+public class DateHolder
+{
 
 	private Date date;
 	private Timestamp sqlTimestamp;
 	private List<Date> dates;
 	private String name;
 
-	public DateHolder() {
+	public DateHolder()
+	{
 		super();
 	}
 
-	public DateHolder(String name, Date date) {
+	public DateHolder(String name, Date date)
+	{
 		super();
 		this.name = name;
 		this.date = date;
 	}
 
-	public Date getDate() {
+	public Date getDate()
+	{
 		return date;
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public Timestamp getSqlTimestamp() {
+	public Timestamp getSqlTimestamp()
+	{
 		return sqlTimestamp;
 	}
 
-	public void setSqlTimestamp(Timestamp sqlTimestamp) {
+	public void setSqlTimestamp(Timestamp sqlTimestamp)
+	{
 		this.sqlTimestamp = sqlTimestamp;
 	}
 
-	public List<Date> getDates() {
+	public List<Date> getDates()
+	{
 		return dates;
 	}
 
-	public void setDates(List<Date> dates) {
+	public void setDates(List<Date> dates)
+	{
 		this.dates = dates;
 	}
 }

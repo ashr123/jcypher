@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,21 +19,24 @@ package iot.jcypher.domainquery.api;
 import iot.jcypher.domainquery.ast.OrderExpression.OrderBy;
 import iot.jcypher.domainquery.internal.QueryRecorder;
 
-public class OrderDirection extends APIObject {
+public class OrderDirection extends APIObject
+{
 
 	private OrderBy orderBy;
 
-	OrderDirection(OrderBy orderBy) {
+	OrderDirection(OrderBy orderBy)
+	{
 		super();
 		this.orderBy = orderBy;
 	}
-	
+
 	/**
 	 * Sort descending
 	 */
-	public void DESCENDING() {
+	public void DESCENDING()
+	{
 		this.orderBy.setDirection(1);
 		QueryRecorder.recordInvocation(this, "DESCENDING", Void.TYPE);
 	}
-	
+
 }

@@ -1,17 +1,21 @@
 package test.greg;
 
-public class Env {
+public class Env
+{
 
 	private String name;
-	
-	public Env() {
+
+	public Env()
+	{
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name)
+	{
 		this.name = name;
 	}
 

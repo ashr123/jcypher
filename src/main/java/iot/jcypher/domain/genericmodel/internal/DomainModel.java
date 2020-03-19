@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2015-2016 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,31 +16,9 @@
 
 package iot.jcypher.domain.genericmodel.internal;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import iot.jcypher.domain.genericmodel.DOField;
-import iot.jcypher.domain.genericmodel.DOType;
-import iot.jcypher.domain.genericmodel.DOType.Builder;
-import iot.jcypher.domain.genericmodel.DOType.DOClassBuilder;
-import iot.jcypher.domain.genericmodel.DOType.DOEnumBuilder;
-import iot.jcypher.domain.genericmodel.DOType.DOInterfaceBuilder;
-import iot.jcypher.domain.genericmodel.DOType.Kind;
-import iot.jcypher.domain.genericmodel.DOTypeBuilderFactory;
-import iot.jcypher.domain.genericmodel.DomainObject;
+import iot.jcypher.domain.genericmodel.*;
 import iot.jcypher.domain.genericmodel.InternalAccess;
+import iot.jcypher.domain.genericmodel.DOType.*;
 import iot.jcypher.domain.internal.DomainAccess;
 import iot.jcypher.domain.internal.IIntDomainAccess;
 import iot.jcypher.domain.mapping.surrogate.AbstractSurrogate;
@@ -53,18 +31,19 @@ import iot.jcypher.query.factories.clause.RETURN;
 import iot.jcypher.query.factories.clause.WITH;
 import iot.jcypher.query.values.JcNode;
 import iot.jcypher.query.values.JcNumber;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtConstructor;
-import javassist.CtField;
-import javassist.CtMethod;
-import javassist.CtNewConstructor;
+import javassist.*;
 
-public class DomainModel {
+import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.Map.Entry;
+
+public class DomainModel
+{
 
 	private static final String JavaPkg = "java.";
-	private static final String[] primitives = new String[] { "int", "boolean",
-			"long", "short", "float", "double" };
+	private static final String[] primitives = new String[]{"int", "boolean",
+			"long", "short", "float", "double"};
 	private static final String EnumVals = "$VALUES"; // "ENUM$VALUES";
 	private static final String TypeNodePostfix = "_mdl";
 	private static final String Colon = ":";
@@ -73,7 +52,7 @@ public class DomainModel {
 	private static final String propInterfaceNames = "interfaceNames";
 	private static final String propFields = "fields";
 	private static final String propKind = "kind";
-	
+
 	private static Map<String, ClassPool> classPools = new HashMap<String, ClassPool>();
 
 	private String domainName;
@@ -86,7 +65,8 @@ public class DomainModel {
 	private ThreadLocal<TransactionState> transactionState;
 	private int version;
 
-	DomainModel(String domName, String domLabel, DomainAccess domAccess) {
+	DomainModel(String domName, String domLabel, DomainAccess domAccess)
+	{
 		super();
 		this.domainName = domName;
 		this.typeNodeName = domLabel.concat(TypeNodePostfix);
@@ -96,28 +76,49 @@ public class DomainModel {
 		this.transactionState = new ThreadLocal<TransactionState>();
 		this.version = -1;
 	}
-	
-	public int getVersion() {
+
+	public static boolean isBuildIn(String typeName)
+	{
+		return typeName.startsWith(JavaPkg) || isPrimitive(typeName);
+	}
+
+	private static boolean isPrimitive(String typeName)
+	{
+		for (String prim : primitives)
+		{
+			if (prim.equals(typeName))
+				return true;
+		}
+		return false;
+	}
+
+	public int getVersion()
+	{
 		return version;
 	}
 
-	public void setVersion(int version) {
+	public void setVersion(int version)
+	{
 		this.version = version;
 	}
 
-	public DOType addType(Class<?> clazz) {
-		if (!AbstractSurrogate.class.isAssignableFrom(clazz)) {
+	public DOType addType(Class<?> clazz)
+	{
+		if (!AbstractSurrogate.class.isAssignableFrom(clazz))
+		{
 			String name = clazz.getName();
 			DOType doType;
-			if ((doType = this.doTypes.get(name)) == null) {
+			if ((doType = this.doTypes.get(name)) == null)
+			{
 				doType = InternalAccess.createDOType(name, this);
 				this.doTypes.put(name, doType);
 				boolean buildIn = doType.isBuildIn();
-				if (!buildIn) {
+				if (!buildIn)
+				{
 					Builder builder = InternalAccess.createBuilder(doType);
 					Kind kind = clazz.isInterface() ? Kind.INTERFACE :
 							Enum.class.isAssignableFrom(clazz) ? Kind.ENUM : Modifier.isAbstract(clazz
-							.getModifiers()) ? Kind.ABSTRACT_CLASS : Kind.CLASS;
+									.getModifiers()) ? Kind.ABSTRACT_CLASS : Kind.CLASS;
 					InternalAccess.setKind(builder, kind);
 					this.addToUnsaved(doType);
 					addFields(builder, clazz);
@@ -128,8 +129,10 @@ public class DomainModel {
 					if (superType != null)
 						InternalAccess.setSuperType(builder, superType);
 					Class<?>[] ifss = clazz.getInterfaces();
-					if (ifss != null) {
-						for (Class<?> ifs : ifss) {
+					if (ifss != null)
+					{
+						for (Class<?> ifs : ifss)
+						{
 							DOType interf = addType(ifs);
 							if (interf != null)
 								InternalAccess.addInterfaceUnique(doType, interf);
@@ -142,10 +145,13 @@ public class DomainModel {
 		return null;
 	}
 
-	private void addFields(Builder builder, Class<?> clazz) {
+	private void addFields(Builder builder, Class<?> clazz)
+	{
 		Field[] fields = clazz.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			if (!Modifier.isTransient(fields[i].getModifiers())) {
+		for (int i = 0; i < fields.length; i++)
+		{
+			if (!Modifier.isTransient(fields[i].getModifiers()))
+			{
 				if (builder.build().getKind() == Kind.ENUM
 						&& fields[i].getName().indexOf(EnumVals) >= 0)
 					continue;
@@ -153,26 +159,31 @@ public class DomainModel {
 				String tName = fTyp.getName();
 				DOField fld = InternalAccess.createDOField(fields[i].getName(), tName, builder.build());
 				InternalAccess.addDeclaredFieldUnique(builder.build(), fld);
-				if (!builder.build().isBuildIn()) {
+				if (!builder.build().isBuildIn())
+				{
 					if (!fld.isBuidInType())
 						addType(fTyp);
-					if (List.class.isAssignableFrom(fields[i].getType())) {
+					if (List.class.isAssignableFrom(fields[i].getType()))
+					{
 						boolean cTypeResolved = false;
 						Type gtype = fields[i].getGenericType();
-						if (gtype instanceof ParameterizedType) {
-							Type lType = ((ParameterizedType)gtype).getActualTypeArguments()[0];
-							String nm = lType instanceof Class<?> ? ((Class<?>)lType).getName() : null;
+						if (gtype instanceof ParameterizedType)
+						{
+							Type lType = ((ParameterizedType) gtype).getActualTypeArguments()[0];
+							String nm = lType instanceof Class<?> ? ((Class<?>) lType).getName() : null;
 							// add the component type if not build in
-							if (nm != null) {
+							if (nm != null)
+							{
 								if (!isBuildIn(nm))
-									addType((Class<?>)lType);
+									addType((Class<?>) lType);
 								InternalAccess.setComponentTypeName(fld, nm);
 								cTypeResolved = true;
 							}
 						}
 						if (!cTypeResolved)
 							InternalAccess.setComponentTypeName(fld, DOField.COMPONENTTYPE_Object);
-					} else if (fields[i].getType().isArray()) {
+					} else if (fields[i].getType().isArray())
+					{
 						Class<?> cType = fields[i].getType().getComponentType();
 						if (!isBuildIn(cType.getName()))
 							addType(cType);
@@ -183,66 +194,79 @@ public class DomainModel {
 		}
 	}
 
-	public DOType getDOType(String typeName) {
+	public DOType getDOType(String typeName)
+	{
 		return this.doTypes.get(typeName);
 	}
-	
-	public List<DOType> getDOTypes() {
+
+	public List<DOType> getDOTypes()
+	{
 		List<DOType> vals = new ArrayList<DOType>();
 		vals.addAll(this.doTypes.values());
-		Collections.sort(vals, new Comparator<DOType>() {
+		Collections.sort(vals, new Comparator<DOType>()
+		{
 			@Override
-			public int compare(DOType o1, DOType o2) {
+			public int compare(DOType o1, DOType o2)
+			{
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
 		return vals;
 	}
 
-	public String getDomainName() {
+	public String getDomainName()
+	{
 		return domainName;
 	}
 
-	public String getTypeNodeName() {
+	public String getTypeNodeName()
+	{
 		return this.typeNodeName;
 	}
 
-	public void mergeFrom(List<GrNode> mdlInfos) {
-		for (GrNode nd : mdlInfos) {
-			if (nd != null) {
-				GrProperty propTyp = nd.getProperty(propTypeName);
-				String typNm = propTyp.getValue().toString();
-				
-				DOType doType = addType(typNm);
-				InternalAccess.setNodeId(doType, nd.getId());
-				
-				setProperties(nd, doType);
-			}
-		}
-	}
-	
-	public void loadFrom(List<GrNode> mdlInfos) {
-		for (GrNode nd : mdlInfos) {
-			if (nd != null) {
+	public void mergeFrom(List<GrNode> mdlInfos)
+	{
+		for (GrNode nd : mdlInfos)
+		{
+			if (nd != null)
+			{
 				GrProperty propTyp = nd.getProperty(propTypeName);
 				String typNm = propTyp.getValue().toString();
 
 				DOType doType = addType(typNm);
 				InternalAccess.setNodeId(doType, nd.getId());
-				
+
 				setProperties(nd, doType);
 			}
 		}
 	}
-	
-	private void setProperties(GrNode nd, DOType doType) {
+
+	public void loadFrom(List<GrNode> mdlInfos)
+	{
+		for (GrNode nd : mdlInfos)
+		{
+			if (nd != null)
+			{
+				GrProperty propTyp = nd.getProperty(propTypeName);
+				String typNm = propTyp.getValue().toString();
+
+				DOType doType = addType(typNm);
+				InternalAccess.setNodeId(doType, nd.getId());
+
+				setProperties(nd, doType);
+			}
+		}
+	}
+
+	private void setProperties(GrNode nd, DOType doType)
+	{
 		GrProperty propSuperTyp = nd.getProperty(propSuperTypeName);
 		GrProperty propFlds = nd.getProperty(propFields);
 		GrProperty propKnd = nd.getProperty(propKind);
 		GrProperty propIfss = nd.getProperty(propInterfaceNames);
-		
+
 		Kind knd = Kind.valueOf(propKnd.getValue().toString());
-		
+
 		Builder builder = InternalAccess.createBuilder(doType);
 		InternalAccess.setKind(builder, knd);
 
@@ -251,8 +275,10 @@ public class DomainModel {
 			InternalAccess.setSuperType(builder, addType(sTypNm));
 
 		Object flds = propFlds.getValue();
-		if (flds instanceof List<?>) {
-			for (Object obj : (List<?>) flds) {
+		if (flds instanceof List<?>)
+		{
+			for (Object obj : (List<?>) flds)
+			{
 				String[] fld = obj.toString().split(":");
 				DOField doField = InternalAccess.createDOField(fld[0], fld[1], doType);
 				if (fld.length == 3) // a list or array type
@@ -262,52 +288,63 @@ public class DomainModel {
 		}
 
 		Object ifss = propIfss.getValue();
-		if (ifss instanceof List<?>) {
-			for (Object obj : (List<?>) ifss) {
+		if (ifss instanceof List<?>)
+		{
+			for (Object obj : (List<?>) ifss)
+			{
 				InternalAccess.addInterfaceUnique(doType, addType(obj.toString()));
 			}
 		}
 	}
 
-	private DOType addType(String typeName) {
+	private DOType addType(String typeName)
+	{
 		DOType typ = this.doTypes.get(typeName);
-		if (typ == null) {
+		if (typ == null)
+		{
 			typ = InternalAccess.createDOType(typeName, this);
 			this.doTypes.put(typeName, typ);
 		}
 		return typ;
 	}
 
-	public boolean hasChanged() {
+	public boolean hasChanged()
+	{
 		return this.unsaved.size() > 0;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<IClause>[] getChangeClauses() {
+	public List<IClause>[] getChangeClauses()
+	{
 		List<IClause> clauses = null;
 		List<IClause> returnClauses = null;
 		List<IClause> withClauses = null;
-		if (hasChanged()) {
+		if (hasChanged())
+		{
 			clauses = new ArrayList<IClause>();
 			returnClauses = new ArrayList<IClause>();
 			withClauses = new ArrayList<IClause>();
 			int idx = 0;
-			for (DOType t : this.unsaved) {
+			for (DOType t : this.unsaved)
+			{
 				List<String> flds = new ArrayList<String>();
-				for (DOField f : t.getDeclaredFields()) {
+				for (DOField f : t.getDeclaredFields())
+				{
 					StringBuilder sb = new StringBuilder();
 					sb.append(f.getName());
 					sb.append(Colon);
 					sb.append(f.getTypeName());
 					String ctn = f.getComponentTypeName();
-					if (ctn != null) {
+					if (ctn != null)
+					{
 						sb.append(Colon);
 						sb.append(ctn);
 					}
 					flds.add(sb.toString());
 				}
 				List<String> ifss = new ArrayList<String>();
-				for (DOType ifs : t.getInterfaces()) {
+				for (DOType ifs : t.getInterfaces())
+				{
 					String ifName = ifs.getName();
 					ifss.add(ifName);
 				}
@@ -326,68 +363,67 @@ public class DomainModel {
 				withClauses.add(WITH.value(n));
 				idx++;
 			}
-			return new List[] { clauses, returnClauses, withClauses };
+			return new List[]{clauses, returnClauses, withClauses};
 		}
 		return null;
 	}
 
-	public static boolean isBuildIn(String typeName) {
-		return typeName.startsWith(JavaPkg) || isPrimitive(typeName);
-	}
-
-	private static boolean isPrimitive(String typeName) {
-		for (String prim : primitives) {
-			if (prim.equals(typeName))
-				return true;
-		}
-		return false;
-	}
-
-	public List<DOType> getUnsaved() {
+	public List<DOType> getUnsaved()
+	{
 		return unsaved;
 	}
-	
-	public void addToUnsaved(DOType typ) {
+
+	public void addToUnsaved(DOType typ)
+	{
 		if (this.unsaved.isEmpty())
 			this.version++;
 		if (!this.unsaved.contains(typ))
 			this.unsaved.add(typ);
 		TransactionState txState = this.transactionState.get();
-		if (txState != null) {
+		if (txState != null)
+		{
 			if (!txState.unsaved.contains(typ))
 				txState.unsaved.add(typ);
 			txState.version = this.version;
 		}
 	}
 
-	public void updatedToGraph() {
+	public void updatedToGraph()
+	{
 		this.unsaved.clear();
 	}
 
-	public Class<?> getClassForName(String name) throws ClassNotFoundException {
+	public Class<?> getClassForName(String name) throws ClassNotFoundException
+	{
 		Class<?> clazz;
-		try {
+		try
+		{
 			clazz = Class.forName(name);
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e)
+		{
 			DOType doType = getDOType(name);
 			if (doType == null)
 				throw e;
-			try {
+			try
+			{
 				createClassFor(doType);
 				clazz = Class.forName(name);
-			} catch (Throwable e1) {
+			} catch (Throwable e1)
+			{
 				if (e1 instanceof ClassNotFoundException)
-					throw (ClassNotFoundException)e1;
+					throw (ClassNotFoundException) e1;
 				else
 					throw new RuntimeException(e1);
 			}
 		}
 		return clazz;
 	}
-	
-	public DomainObject getCreateDomainObjectFor(Object obj) {
+
+	public DomainObject getCreateDomainObjectFor(Object obj)
+	{
 		DomainObject dobj = getNurseryObject(obj);
-		if (dobj == null) {
+		if (dobj == null)
+		{
 			String typNm = obj.getClass().getName();
 			DOType typ = getDOType(typNm);
 			if (typ == null)
@@ -399,17 +435,22 @@ public class DomainModel {
 		return dobj;
 	}
 
-	private void createClassFor(DOType doType) throws Throwable {
+	private void createClassFor(DOType doType) throws Throwable
+	{
 		createCtClassFor(doType, getClassPool());
 	}
 
 	private CtClass createCtClassFor(DOType doType, ClassPool cp)
-			throws Throwable {
+			throws Throwable
+	{
 		CtClass cc = cp.getOrNull(doType.getName());
-		if (cc == null) {
-			if (doType.getKind() == Kind.INTERFACE) {
+		if (cc == null)
+		{
+			if (doType.getKind() == Kind.INTERFACE)
+			{
 				cc = cp.makeInterface(doType.getName());
-			} else {
+			} else
+			{
 				cc = cp.makeClass(doType.getName());
 				if (doType.getKind() == Kind.ABSTRACT_CLASS)
 					cc.setModifiers(cc.getModifiers() | Modifier.ABSTRACT);
@@ -417,18 +458,22 @@ public class DomainModel {
 //					cc.setModifiers(cc.getModifiers() | javassist.Modifier.ENUM);
 			}
 			DOType doSType = doType.getSuperType();
-			if (doSType != null) {
+			if (doSType != null)
+			{
 				CtClass scc = createCtClassFor(doSType, cp);
 				cc.setSuperclass(scc);
 			}
-			for (DOType ifs : doType.getInterfaces()) {
+			for (DOType ifs : doType.getInterfaces())
+			{
 				CtClass ifct = createCtClassFor(ifs, cp);
 				cc.addInterface(ifct);
 			}
 
-			if (doType.getKind() == Kind.ENUM) {
+			if (doType.getKind() == Kind.ENUM)
+			{
 				int count = 0;
-				for (DOField fld : doType.getDeclaredFields()) {
+				for (DOField fld : doType.getDeclaredFields())
+				{
 					if (fld.getTypeName().equals(doType.getName()))
 						count++;
 				}
@@ -461,18 +506,22 @@ public class DomainModel {
 				sb.append("(String name, int ordinal) {super(name, ordinal);}");
 				CtConstructor constr = CtNewConstructor.make(sb.toString(), cc);
 				cc.addConstructor(constr);
-			} else {
-				for (DOField fld : doType.getDeclaredFields()) {
+			} else
+			{
+				for (DOField fld : doType.getDeclaredFields())
+				{
 					CtField ctField;
 					String tn = fld.getTypeName();
-					if (!fld.isBuidInType()) {
+					if (!fld.isBuidInType())
+					{
 						DOType ft = getDOType(tn);
 						if (ft == null)
 							throw new ClassNotFoundException(tn);
 						CtClass ctFt = createCtClassFor(ft, cp);
 						ctField = new CtField(ctFt, fld.getName(), cc);
 						ctField.setModifiers(javassist.Modifier.PUBLIC);
-					} else {
+					} else
+					{
 						StringBuilder sb = new StringBuilder();
 						sb.append("public ");
 						sb.append(tn);
@@ -485,9 +534,10 @@ public class DomainModel {
 				}
 			}
 			cc.toClass(); // creates the class and registers it with the class
-							// loader
-			if (doType.getKind() == Kind.ENUM) { // add the enum values
-													// dynamically
+			// loader
+			if (doType.getKind() == Kind.ENUM)
+			{ // add the enum values
+				// dynamically
 				Class<?> clazz = Class.forName(doType.getName());
 				Field f = clazz.getDeclaredField("values");
 				f.setAccessible(true);
@@ -496,11 +546,13 @@ public class DomainModel {
 						String.class, int.class);
 //				ConstructorAccessor constr = ReflectionFactory.getReflectionFactory().newConstructorAccessor(cstr);
 				int ord = 0;
-				for (DOField fld : doType.getDeclaredFields()) {
-					if (fld.getTypeName().equals(doType.getName())) {
+				for (DOField fld : doType.getDeclaredFields())
+				{
+					if (fld.getTypeName().equals(doType.getName()))
+					{
 //						Object val = constr.newInstance(new Object[]{fld.getName(), ord});
 						Object val = cstr.newInstance(fld.getName(), ord);
-						((Object[])vals)[ord] = val;
+						((Object[]) vals)[ord] = val;
 						ord++;
 					}
 				}
@@ -512,73 +564,88 @@ public class DomainModel {
 		return cc;
 	}
 
-	private ClassPool getClassPool() {
+	private ClassPool getClassPool()
+	{
 		ClassPool cp = classPools.get(this.getDomainName());
-		if (cp == null) {
+		if (cp == null)
+		{
 			cp = new ClassPool(true);
 			classPools.put(this.getDomainName(), cp);
 		}
 		return cp;
 	}
-	
-	void addDOTypeIfNeeded(DOType doType) {
-		if (this.doTypes.get(doType.getName()) == null) {
+
+	void addDOTypeIfNeeded(DOType doType)
+	{
+		if (this.doTypes.get(doType.getName()) == null)
+		{
 			this.doTypes.put(doType.getName(), doType);
 			if (!doType.isBuildIn())
 				this.addToUnsaved(doType);
 		}
 	}
-	
-	public DOTypeBuilderFactory getTypeBuilderFactory() {
+
+	public DOTypeBuilderFactory getTypeBuilderFactory()
+	{
 		if (this.typeBuilderFactory == null)
 			this.typeBuilderFactory = new TypeBuilderFactory();
 		return this.typeBuilderFactory;
 	}
-	
-	public void addNurseryObject(Object raw, DomainObject dobj) {
+
+	public void addNurseryObject(Object raw, DomainObject dobj)
+	{
 		if (this.nursery == null)
 			this.nursery = new IdentityHashMap<Object, DomainObject>();
 		this.nursery.put(raw, dobj);
 		TransactionState txState = this.transactionState.get();
-		if (txState != null) {
+		if (txState != null)
+		{
 			if (txState.nursery == null)
 				txState.nursery = new IdentityHashMap<Object, DomainObject>();
 			txState.nursery.put(raw, dobj);
 		}
 	}
-	
-	public DomainObject getNurseryObject(Object raw) {
+
+	public DomainObject getNurseryObject(Object raw)
+	{
 		if (this.nursery != null)
 			return this.nursery.get(raw);
 		return null;
 	}
-	
-	public void removeNurseryObject(Object raw) {
+
+	public void removeNurseryObject(Object raw)
+	{
 		if (this.nursery != null)
 			this.nursery.remove(raw);
 	}
-	
-	public void clearNursery() {
+
+	public void clearNursery()
+	{
 		if (this.nursery != null)
 			this.nursery.clear();
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void beginTx() {
-		if (this.transactionState.get() == null) {
+	public void beginTx()
+	{
+		if (this.transactionState.get() == null)
+		{
 			TransactionState txState = new TransactionState();
 			txState.unsaved = (List<DOType>) ((ArrayList<DOType>) this.unsaved).clone();
 			if (this.nursery != null)
-				txState.nursery = (Map<Object, DomainObject>) ((IdentityHashMap<Object, DomainObject>)this.nursery).clone();
+				txState.nursery = (Map<Object, DomainObject>) ((IdentityHashMap<Object, DomainObject>) this.nursery).clone();
 			txState.version = this.version;
 			this.transactionState.set(txState);
 		}
 	}
-	
-	public void closeTx(boolean failed) {
+
+	public void closeTx(boolean failed)
+	{
 		TransactionState txState = this.transactionState.get();
-		if (txState != null) {
-			if (failed) {
+		if (txState != null)
+		{
+			if (failed)
+			{
 				this.unsaved = txState.unsaved;
 				this.nursery = txState.nursery;
 				this.version = txState.version;
@@ -587,21 +654,24 @@ public class DomainModel {
 		}
 	}
 
-	DomainAccess getDomainAccess() {
+	DomainAccess getDomainAccess()
+	{
 		return domainAccess;
 	}
 
-	public String asString() {
+	public String asString()
+	{
 		String indent = "   ";
 		StringBuilder sb = new StringBuilder();
 		sb.append(this.domainName);
 		sb.append(" (DomainModel Version: ");
 		sb.append(this.version);
 		sb.append(", DomainInfo Version: ");
-		sb.append(((IIntDomainAccess)this.domainAccess).getInternalDomainAccess().getDomainInfoVersion());
+		sb.append(((IIntDomainAccess) this.domainAccess).getInternalDomainAccess().getDomainInfoVersion());
 		sb.append(") {");
 		List<DOType> vals = getDOTypes();
-		for (DOType t : vals) {
+		for (DOType t : vals)
+		{
 			sb.append('\n');
 			sb.append(t.asString(indent));
 		}
@@ -609,13 +679,16 @@ public class DomainModel {
 		sb.append('}');
 		return sb.toString();
 	}
-	
-	public String nurseryAsString() {
-		if (this.nursery != null) {
+
+	public String nurseryAsString()
+	{
+		if (this.nursery != null)
+		{
 			List<String> keys = new ArrayList<String>();
 			Map<String, Integer> cont = new HashMap<String, Integer>();
 			Iterator<Object> it = this.nursery.keySet().iterator();
-			while(it.hasNext()) {
+			while (it.hasNext())
+			{
 				String nm = it.next().getClass().getName();
 				Integer cnt = cont.get(nm);
 				if (cnt == null)
@@ -625,7 +698,8 @@ public class DomainModel {
 				cont.put(nm, cnt);
 			}
 			Iterator<Entry<String, Integer>> it_2 = cont.entrySet().iterator();
-			while(it_2.hasNext()) {
+			while (it_2.hasNext())
+			{
 				Entry<String, Integer> entry = (Entry<String, Integer>) it_2.next();
 				StringBuilder sb = new StringBuilder();
 				sb.append(entry.getKey());
@@ -639,16 +713,27 @@ public class DomainModel {
 		}
 		return "null";
 	}
-	
+
 	/********************************************/
-	public class TypeBuilderFactory implements DOTypeBuilderFactory {
+	private static class TransactionState
+	{
+		private List<DOType> unsaved;
+		private Map<Object, DomainObject> nursery;
+		private int version;
+	}
+
+	/********************************************/
+	public class TypeBuilderFactory implements DOTypeBuilderFactory
+	{
 
 		@Override
-		public DOClassBuilder createClassBuilder(String typeName) {
+		public DOClassBuilder createClassBuilder(String typeName)
+		{
 			DOClassBuilder ret = InternalAccess.createClassBuilder(typeName, DomainModel.this);
 			addDOTypeIfNeeded(ret.build());
 			DOType sType = getDOType("java.lang.Object");
-			if (sType == null) {
+			if (sType == null)
+			{
 				sType = InternalAccess.createDOType("java.lang.Object", DomainModel.this);
 				addDOTypeIfNeeded(sType);
 			}
@@ -657,30 +742,26 @@ public class DomainModel {
 		}
 
 		@Override
-		public DOInterfaceBuilder createInterfaceBuilder(String typeName) {
+		public DOInterfaceBuilder createInterfaceBuilder(String typeName)
+		{
 			DOInterfaceBuilder ret = InternalAccess.createInterfaceBuilder(typeName, DomainModel.this);
 			addDOTypeIfNeeded(ret.build());
 			return ret;
 		}
 
 		@Override
-		public DOEnumBuilder createEnumBuilder(String typeName) {
+		public DOEnumBuilder createEnumBuilder(String typeName)
+		{
 			DOEnumBuilder ret = InternalAccess.createEnumBuilder(typeName, DomainModel.this);
 			addDOTypeIfNeeded(ret.build());
 			DOType sType = getDOType("java.lang.Enum");
-			if (sType == null) {
+			if (sType == null)
+			{
 				sType = InternalAccess.createDOType("java.lang.Enum", DomainModel.this);
 				addDOTypeIfNeeded(sType);
 			}
 			ret.setSuperType(sType);
 			return ret;
 		}
-	}
-	
-	/********************************************/
-	private static class TransactionState {
-		private List<DOType> unsaved;
-		private Map<Object, DomainObject> nursery;
-		private int version;
 	}
 }

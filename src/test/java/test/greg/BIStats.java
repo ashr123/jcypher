@@ -1,35 +1,43 @@
 package test.greg;
 
-public class BIStats {
+public class BIStats
+{
 
 	private Env measuredIn;
 	private App measuredFor;
 	private BIStats follows;
-	
-	public BIStats() {
+
+	public BIStats()
+	{
 	}
 
-	public Env getMeasuredIn() {
+	public Env getMeasuredIn()
+	{
 		return measuredIn;
 	}
 
-	public void setMeasuredIn(Env measuredIn) {
+	public void setMeasuredIn(Env measuredIn)
+	{
 		this.measuredIn = measuredIn;
 	}
 
-	public App getMeasuredFor() {
+	public App getMeasuredFor()
+	{
 		return measuredFor;
 	}
 
-	public void setMeasuredFor(App measuredFor) {
+	public void setMeasuredFor(App measuredFor)
+	{
 		this.measuredFor = measuredFor;
 	}
 
-	public BIStats getFollows() {
+	public BIStats getFollows()
+	{
 		return follows;
 	}
 
-	public void setFollows(BIStats follows) {
+	public void setFollows(BIStats follows)
+	{
 		this.follows = follows;
 	}
 

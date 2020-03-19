@@ -1,25 +1,35 @@
 package test.domainmapping;
 
-public class Contact {
+public class Contact
+{
 
 	private ContactType type;
 	private String nummer;
-	
-	public ContactType getType() {
+
+	public ContactType getType()
+	{
 		return type;
 	}
-	public void setType(ContactType type) {
+
+	public void setType(ContactType type)
+	{
 		this.type = type;
 	}
-	public String getNummer() {
+
+	public String getNummer()
+	{
 		return nummer;
 	}
-	public void setNummer(String nummer) {
+
+	public void setNummer(String nummer)
+	{
 		this.nummer = nummer;
 	}
+
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "Contact [type=" + type + ", nummer=" + nummer + "]";
 	}
-	
+
 }

@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,19 +18,23 @@ package iot.jcypher.query.ast.union;
 
 import iot.jcypher.query.ast.ASTNode;
 
-public class UnionExpression extends ASTNode {
+public class UnionExpression extends ASTNode
+{
 
 	private boolean all = false;
-	
-	public void setAll() {
+
+	public void setAll()
+	{
 		this.all = true;
 	}
-	
-	public boolean isAll() {
+
+	public boolean isAll()
+	{
 		return this.all;
 	}
-	
-	public boolean isDistinct() {
+
+	public boolean isDistinct()
+	{
 		return !isAll();
 	}
 }

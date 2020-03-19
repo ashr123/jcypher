@@ -1,25 +1,30 @@
 package test.domainmapping.maps;
 
-public class Mark {
+public class Mark
+{
 
 	private String name;
 
-	public Mark() {
+	public Mark()
+	{
 		super();
 	}
 
-	public Mark(String name) {
+	public Mark(String name)
+	{
 		super();
 		this.name = name;
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "Mark [name=" + name + "]";
 	}
-	
+
 }

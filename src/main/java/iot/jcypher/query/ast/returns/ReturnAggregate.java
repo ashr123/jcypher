@@ -2,48 +2,58 @@ package iot.jcypher.query.ast.returns;
 
 import iot.jcypher.query.values.ValueElement;
 
-public class ReturnAggregate extends ReturnValue {
+public class ReturnAggregate extends ReturnValue
+{
 
 	private AggregateFunctionType type;
 	private boolean distinct = false;
 	private ValueElement argument;
 	private Number percentile;
-	
-	/*********************************/
-	public enum AggregateFunctionType {
-		SUM, AVG, PERCENTILE_DISC, PERCENTILE_CONT,
-		STDEV, STDEVP, MAX, MIN
-	}
 
-	public AggregateFunctionType getType() {
+	public AggregateFunctionType getType()
+	{
 		return type;
 	}
 
-	public void setType(AggregateFunctionType type) {
+	public void setType(AggregateFunctionType type)
+	{
 		this.type = type;
 	}
 
-	public ValueElement getArgument() {
+	public ValueElement getArgument()
+	{
 		return argument;
 	}
 
-	public void setArgument(ValueElement argument) {
+	public void setArgument(ValueElement argument)
+	{
 		this.argument = argument;
 	}
 
-	public Number getPercentile() {
+	public Number getPercentile()
+	{
 		return percentile;
 	}
 
-	public void setPercentile(Number percentile) {
+	public void setPercentile(Number percentile)
+	{
 		this.percentile = percentile;
 	}
 
-	public boolean isDistinct() {
+	public boolean isDistinct()
+	{
 		return distinct;
 	}
 
-	public void setDistinct() {
+	public void setDistinct()
+	{
 		this.distinct = true;
+	}
+
+	/*********************************/
+	public enum AggregateFunctionType
+	{
+		SUM, AVG, PERCENTILE_DISC, PERCENTILE_CONT,
+		STDEV, STDEVP, MAX, MIN
 	}
 }

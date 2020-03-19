@@ -1,6 +1,7 @@
 package test.domainmapping.inner;
 
-public interface MyInterface {
+public interface MyInterface
+{
 
 	public int getNumber();
 }

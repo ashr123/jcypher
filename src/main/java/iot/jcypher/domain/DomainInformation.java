@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014-2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,20 +35,21 @@ import java.util.List;
 
 /**
  * Provides general informations about domains.
- *
  */
-public class DomainInformation {
-	
+public class DomainInformation
+{
+
 	private static final String DomainInfoNodeLabel = "DomainInfo";
 	private static final String DomainInfoNameProperty = "name";
 	private static final String DomainInfoLabel2ClassProperty = "label2ClassMap";
-	
+
 	private IDBAccess dbAccess;
 	private String domainName;
 	private Long infoNodeId;
 	private IDomainAccess domainAccess;
 
-	private DomainInformation(IDBAccess dbAccess, String domainName) {
+	private DomainInformation(IDBAccess dbAccess, String domainName)
+	{
 		super();
 		this.dbAccess = dbAccess;
 		this.domainName = domainName;
@@ -56,116 +57,159 @@ public class DomainInformation {
 
 	/**
 	 * answer the names of available domains.
+	 *
 	 * @param dbAccess
 	 * @return a list of names of available domains
 	 * in the graph database accessed through dbAccess.
 	 */
-	public static List<String> availableDomains(IDBAccess dbAccess) {
+	public static List<String> availableDomains(IDBAccess dbAccess)
+	{
 		List<GrNode> resultList = loadAllDomainInfoNodes(dbAccess);
 		List<String> domains = new ArrayList<String>();
-		for (GrNode rNode : resultList) {
+		for (GrNode rNode : resultList)
+		{
 			domains.add(rNode.getProperty(DomainInfoNameProperty).getValue().toString());
 		}
 		return domains;
 	}
-	
+
 	/**
 	 * create a DomainInformation object for a domain with name 'domainName'
 	 * stored in a graphdatabase accessed via 'dbAccess'
+	 *
 	 * @param dbAccess
 	 * @param domainName
 	 * @return a DomainInformation object
 	 */
-	public static DomainInformation forDomain(IDBAccess dbAccess, String domainName) {
+	public static DomainInformation forDomain(IDBAccess dbAccess, String domainName)
+	{
 		return new DomainInformation(dbAccess, domainName);
 	}
-	
+
+	private static List<GrNode> loadAllDomainInfoNodes(IDBAccess dbAccess)
+	{
+		JcNode n = new JcNode("n");
+		JcQuery query = new JcQuery();
+		query.setClauses(new IClause[]{
+				MATCH.node(n).label(DomainInfoNodeLabel),
+				RETURN.value(n)
+		});
+		JcQueryResult result = dbAccess.execute(query);
+		List<JcError> errors = Util.collectErrors(result);
+		if (errors.size() > 0)
+		{
+			throw new JcResultException(errors);
+		}
+		return result.resultOf(n);
+	}
+
 	/**
 	 * answer a list of DomainObjectTypes stored in the domain graph
+	 *
 	 * @return a list of DomainObjectTypes
 	 */
-	public List<DomainObjectType> getDomainObjectTypes() {
+	public List<DomainObjectType> getDomainObjectTypes()
+	{
 		List<DomainObjectType> resultList = new ArrayList<DomainObjectType>();
 		GrNode infoNode = loadDomainInfoNode();
 		GrProperty prop = infoNode.getProperty(DomainInfoLabel2ClassProperty);
-		if (prop != null) {
+		if (prop != null)
+		{
 			@SuppressWarnings("unchecked")
 			List<String> val = (List<String>) prop.getValue();
-			for (String str : val) {
+			for (String str : val)
+			{
 				String[] c2l = str.split("=");
 				resultList.add(new DomainObjectType(c2l[1], c2l[0]));
 			}
 		}
 		return resultList;
 	}
-	
+
 	/**
 	 * answer a list of names of DomainObjectTypes stored in the domain graph
+	 *
 	 * @return a list of DomainObjectTypes
 	 */
-	public List<String> getDomainObjectTypeNames() {
+	public List<String> getDomainObjectTypeNames()
+	{
 		List<DomainObjectType> types = getDomainObjectTypes();
 		List<String> typeNames = new ArrayList<String>(types.size());
-		for (DomainObjectType typ : types) {
+		for (DomainObjectType typ : types)
+		{
 			typeNames.add(typ.getTypeName());
 		}
 		return typeNames;
 	}
-	
+
 	/**
 	 * answer the raw types (Java classes) of the list of DomainObjectTypes.
 	 * <br/>Note: this may raise a ClassNotFoundException
+	 *
 	 * @param types list of DomainObjectTypes
 	 * @return list of raw types (Java classes)
 	 */
-	public List<Class<?>> getRawTypes(List<DomainObjectType> types) {
+	public List<Class<?>> getRawTypes(List<DomainObjectType> types)
+	{
 		List<Class<?>> resultList = new ArrayList<Class<?>>();
-		for (DomainObjectType type : types) {
+		for (DomainObjectType type : types)
+		{
 			resultList.add(type.getType());
 		}
 		return resultList;
 	}
-	
+
 	/**
 	 * answer a domain access object (IDomainAccess) to access (store, retrieve domain objects) this domain
+	 *
 	 * @return a domain access object (IDomainAccess)
 	 */
-	public IDomainAccess getDomainAccess() {
-		if (this.domainAccess == null) {
+	public IDomainAccess getDomainAccess()
+	{
+		if (this.domainAccess == null)
+		{
 			this.domainAccess = DomainAccessFactory.createDomainAccess(dbAccess, domainName);
 		}
 		return this.domainAccess;
 	}
-	
+
 	/**
 	 * answer a domain access object (IGenericDomainAccess) to access (store, retrieve domain objects) this domain.
 	 * The returned domain access object works with a generic domain model.
+	 *
 	 * @return a domain access object (IDomainAccess)
 	 */
-	public IGenericDomainAccess getGenericDomainAccess() {
+	public IGenericDomainAccess getGenericDomainAccess()
+	{
 		return getDomainAccess().getGenericDomainAccess();
 	}
-	
-	private GrNode loadDomainInfoNode() {
+
+	private GrNode loadDomainInfoNode()
+	{
 		GrNode infoNode = null;
-		if (this.infoNodeId == null) {
+		if (this.infoNodeId == null)
+		{
 			List<GrNode> resultList = loadAllDomainInfoNodes(dbAccess);
-			for (GrNode rNode : resultList) {
-				if (domainName.equals(rNode.getProperty(DomainInfoNameProperty).getValue().toString())) {
+			for (GrNode rNode : resultList)
+			{
+				if (domainName.equals(rNode.getProperty(DomainInfoNameProperty).getValue().toString()))
+				{
 					infoNode = rNode;
 					infoNodeId = new Long(rNode.getId());
 				}
 			}
-		} else {
+		} else
+		{
 			JcNode n = new JcNode("n");
 			JcQuery query = new JcQuery();
-			query.setClauses(new IClause[] {
+			query.setClauses(new IClause[]{
 					START.node(n).byId(infoNodeId.longValue()),
 					RETURN.value(n)
 			});
 			JcQueryResult result = dbAccess.execute(query);
 			List<JcError> errors = Util.collectErrors(result);
-			if (errors.size() > 0) {
+			if (errors.size() > 0)
+			{
 				throw new JcResultException(errors);
 			}
 			List<GrNode> resultList = result.resultOf(n);
@@ -174,29 +218,16 @@ public class DomainInformation {
 		}
 		return infoNode;
 	}
-	
-	private static List<GrNode> loadAllDomainInfoNodes (IDBAccess dbAccess) {
-		JcNode n = new JcNode("n");
-		JcQuery query = new JcQuery();
-		query.setClauses(new IClause[] {
-				MATCH.node(n).label(DomainInfoNodeLabel),
-				RETURN.value(n)
-		});
-		JcQueryResult result = dbAccess.execute(query);
-		List<JcError> errors = Util.collectErrors(result);
-		if (errors.size() > 0) {
-			throw new JcResultException(errors);
-		}
-		return result.resultOf(n);
-	}
-	
+
 	/*******************************************/
-	public class DomainObjectType {
+	public class DomainObjectType
+	{
 		private String typeName;
 		private String nodeLabel;
 		private Class<?> type;
-		
-		private DomainObjectType(String typeName, String nodeLabel) {
+
+		private DomainObjectType(String typeName, String nodeLabel)
+		{
 			super();
 			this.typeName = typeName;
 			this.nodeLabel = nodeLabel;
@@ -204,30 +235,39 @@ public class DomainInformation {
 
 		/**
 		 * Answer the fully qualified name of the java type.
+		 *
 		 * @return the fully qualified name of the java type.
 		 */
-		public String getTypeName() {
+		public String getTypeName()
+		{
 			return typeName;
 		}
 
 		/**
 		 * Answer label of nodes to which domain objects of that type are mapped.
+		 *
 		 * @return a node label
 		 */
-		public String getNodeLabel() {
+		public String getNodeLabel()
+		{
 			return nodeLabel;
 		}
 
 		/**
 		 * Answer the java type (Class).
 		 * Note: this may raise a ClassNotFoundException
+		 *
 		 * @return the java type
 		 */
-		public Class<?> getType() {
-			if (this.type == null) {
-				try {
+		public Class<?> getType()
+		{
+			if (this.type == null)
+			{
+				try
+				{
 					this.type = Class.forName(this.typeName);
-				} catch (ClassNotFoundException e) {
+				} catch (ClassNotFoundException e)
+				{
 					throw new RuntimeException(e);
 				}
 			}
@@ -235,7 +275,8 @@ public class DomainInformation {
 		}
 
 		@Override
-		public String toString() {
+		public String toString()
+		{
 			return "DomainObjectType [typeName=" + typeName + "]";
 		}
 	}

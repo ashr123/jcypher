@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,8 +16,6 @@
 
 package iot.jcypher.domainquery;
 
-import java.util.List;
-
 import iot.jcypher.domain.IDomainAccess;
 import iot.jcypher.domain.genericmodel.DomainObject;
 import iot.jcypher.domain.internal.DomainAccess.InternalDomainAccess;
@@ -25,49 +23,59 @@ import iot.jcypher.domainquery.api.APIAccess;
 import iot.jcypher.domainquery.api.DomainObjectMatch;
 import iot.jcypher.domainquery.internal.QueryRecorder;
 
+import java.util.List;
+
 /**
  * Allows to formulate a query against a generic domain model
- * @author wolfgang
  *
+ * @author wolfgang
  */
-public class GDomainQuery extends AbstractDomainQuery {
+public class GDomainQuery extends AbstractDomainQuery
+{
 
-	public GDomainQuery(IDomainAccess domainAccess) {
+	public GDomainQuery(IDomainAccess domainAccess)
+	{
 		super(domainAccess);
 	}
-	
+
 	/**
 	 * Create a match for a specific type of domain objects.
 	 * <br/>The match is part of a query performed on a generic domain model.
+	 *
 	 * @param domainObjectTypeName
 	 * @return a DomainObjectMatch for a specific type of domain objects
 	 */
-	public DomainObjectMatch<DomainObject> createMatch(String domainObjectTypeName) {
+	public DomainObjectMatch<DomainObject> createMatch(String domainObjectTypeName)
+	{
 		InternalDomainAccess iAccess = this.queryExecutor.getMappingInfo().getInternalDomainAccess();
-		try {
+		try
+		{
 			iAccess.loadDomainInfoIfNeeded();
 			Class<?> clazz = iAccess.getClassForName(domainObjectTypeName);
 			DomainObjectMatch<?> delegate = createMatchInternal(clazz);
 			DomainObjectMatch<DomainObject> ret = APIAccess.createDomainObjectMatch(DomainObject.class, delegate);
 			QueryRecorder.recordAssignment(this, "createMatch", delegate, QueryRecorder.literal(domainObjectTypeName));
 			return ret;
-		} catch (Throwable e) {
+		} catch (Throwable e)
+		{
 			if (e instanceof RuntimeException)
-				throw (RuntimeException)e;
+				throw (RuntimeException) e;
 			else
 				throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Create a match for a list of domain objects which were retrieved by another query.
 	 * <br/>The match will be part of a query performed on a generic domain model.
-	 * @param domainObjects a list of domain objects which were retrieved by another query
+	 *
+	 * @param domainObjects        a list of domain objects which were retrieved by another query
 	 * @param domainObjectTypeName the type name of those domain objects
 	 * @return a DomainObjectMatch
 	 */
 	public DomainObjectMatch<DomainObject> createMatchFor(List<DomainObject> domainObjects,
-			String domainObjectTypeName) {
+	                                                      String domainObjectTypeName)
+	{
 		DomainObjectMatch<DomainObject> ret = createGenMatchForInternal(domainObjects, domainObjectTypeName);
 		DomainObjectMatch<?> delegate = APIAccess.getDelegate(ret);
 		DomainObjectMatch<?> match = delegate != null ? delegate : ret;

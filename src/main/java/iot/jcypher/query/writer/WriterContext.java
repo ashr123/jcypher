@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014-2016 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,12 +16,13 @@
 
 package iot.jcypher.query.writer;
 
+import iot.jcypher.query.ast.ClauseType;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import iot.jcypher.query.ast.ClauseType;
-
-public class WriterContext {
+public class WriterContext
+{
 
 	public StringBuilder buffer = new StringBuilder();
 	public StringBuilder filterBuffer;
@@ -35,70 +36,84 @@ public class WriterContext {
 	// vs. using cypher endpoint
 	boolean useTransactionalEndpoint = false;
 	Object preparedQuery;
-	
+
 	// allows to specify a number of resultDataContents for
 	// JSON output from the REST API
 	private List<String> resultDataContents;
 	private int paramIndex = -1;
 	private int paramSetIndex = 0;
 	private int level = 0;
-	
-	public void incrementLevel() {
+
+	public void incrementLevel()
+	{
 		this.level++;
 	}
-	
-	public void decrementLevel() {
+
+	public void decrementLevel()
+	{
 		this.level--;
 	}
-	
-	public void resetLevel() {
+
+	public void resetLevel()
+	{
 		this.level = 0;
 	}
-	
-	public String getLevelIndent() {
+
+	public String getLevelIndent()
+	{
 		String indent = new String();
-		for (int i = 0; i < this.level;i++) {
+		for (int i = 0; i < this.level; i++)
+		{
 			indent = indent.concat(Pretty.INDENT);
 		}
 		return indent;
 	}
-	
-	int getParamIndex() {
+
+	int getParamIndex()
+	{
 		return paramIndex;
 	}
 
-	void setParamIndex(int paramIndex) {
+	void setParamIndex(int paramIndex)
+	{
 		this.paramIndex = paramIndex;
 	}
 
-	int getNextParamIndex() {
+	int getNextParamIndex()
+	{
 		this.paramIndex++;
 		return this.paramIndex;
 	}
-	
-	void incrementParamSetIndex() {
+
+	void incrementParamSetIndex()
+	{
 		this.paramSetIndex++;
 	}
-	
-	int getParamSetIndex() {
+
+	int getParamSetIndex()
+	{
 		return this.paramSetIndex;
 	}
-	
-	List<String> getResultDataContents() {
-		if (this.resultDataContents == null) {
+
+	List<String> getResultDataContents()
+	{
+		if (this.resultDataContents == null)
+		{
 			this.resultDataContents = new ArrayList<String>();
 		}
 		return this.resultDataContents;
 	}
 
-	void setResultDataContents(List<String> resultDataContents) {
+	void setResultDataContents(List<String> resultDataContents)
+	{
 		this.resultDataContents = resultDataContents;
 	}
-	
-	void doesHaveDSLParams() {
+
+	void doesHaveDSLParams()
+	{
 		if (this.preparedQuery instanceof PreparedQuery)
-			((PreparedQuery)this.preparedQuery).setdSLParams();
+			((PreparedQuery) this.preparedQuery).setdSLParams();
 		else if (this.preparedQuery instanceof PreparedQueries)
-			((PreparedQueries)this.preparedQuery).setdSLParams();
+			((PreparedQueries) this.preparedQuery).setdSLParams();
 	}
 }

@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,11 @@ import iot.jcypher.query.ast.collection.CollectExpression;
 import iot.jcypher.query.ast.collection.ReduceEvalExpression;
 import iot.jcypher.query.values.JcValue;
 
-public class ReduceTo extends APIObject {
+public class ReduceTo extends APIObject
+{
 
-	ReduceTo(CollectExpression cx) {
+	ReduceTo(CollectExpression cx)
+	{
 		super();
 		this.astNode = cx;
 	}
@@ -34,9 +36,10 @@ public class ReduceTo extends APIObject {
 	 * <div color='red' style="font-size:18px;color:red"><i>e.g. ...REDUCE()<br/>.fromAll(n).IN_nodes(p)<br/>.<b>to(totalAge)</b><br/>.by(totalAge.plus(n.numberProperty("age")))<br/>.startWith(0)</i></div>
 	 * <br/>
 	 */
-	public ReduceBy to(JcValue value) {
-		CollectExpression collXpr = (CollectExpression)this.astNode;
-		ReduceEvalExpression reduceEval = (ReduceEvalExpression)(collXpr).getEvalExpression();
+	public ReduceBy to(JcValue value)
+	{
+		CollectExpression collXpr = (CollectExpression) this.astNode;
+		ReduceEvalExpression reduceEval = (ReduceEvalExpression) (collXpr).getEvalExpression();
 		reduceEval.setResultVariable(value);
 		return new ReduceBy(collXpr);
 	}

@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import iot.jcypher.query.api.IClause;
 import iot.jcypher.query.factories.clause.NATIVE;
 import iot.jcypher.query.result.JcResultException;
 import iot.jcypher.util.Util;
+import test.AbstractTestSuite;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,54 +31,65 @@ import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import test.AbstractTestSuite;
+public class LoadUtil
+{
 
-public class LoadUtil {
-
-	public static void loadPeopleDomain(IDBAccess dbAccess) {
+	public static void loadPeopleDomain(IDBAccess dbAccess)
+	{
 		loadPeopleDomain(dbAccess, "/test/load/people_domain.txt");
 	}
-	
-	public static void loadPeopleDomainWithQuery(IDBAccess dbAccess) {
+
+	public static void loadPeopleDomainWithQuery(IDBAccess dbAccess)
+	{
 		loadPeopleDomain(dbAccess, "/test/load/people_domain_with_query.txt");
 	}
-	
-	public static void loadPeopleDomainExtension(IDBAccess dbAccess) {
+
+	public static void loadPeopleDomainExtension(IDBAccess dbAccess)
+	{
 		loadPeopleDomain(dbAccess, "/test/load/people_domain_extension.txt");
 	}
-	
-	private static void loadPeopleDomain(IDBAccess dbAccess, String resource) {
+
+	private static void loadPeopleDomain(IDBAccess dbAccess, String resource)
+	{
 		InputStreamReader ir = null;
-		try {
+		try
+		{
 			InputStream in = GenericQueryTest.class.getResourceAsStream(resource);
 			ir = new InputStreamReader(in);
-			
+
 			LineNumberReader lnr = new LineNumberReader(ir);
 			List<String> lns = new ArrayList<String>();
 			String line = lnr.readLine();
-			while(line != null) {
+			while (line != null)
+			{
 				lns.add(line);
 				line = lnr.readLine();
 			}
 			String[] lines = lns.toArray(new String[lns.size()]);
-			IClause[] clauses = new IClause[] {
+			IClause[] clauses = new IClause[]{
 					NATIVE.cypher(lines)
 			};
 			JcQuery q = new JcQuery();
 			q.setClauses(clauses);
-			
+
 			JcQueryResult result = dbAccess.execute(q);
-			if (result.hasErrors()) {
+			if (result.hasErrors())
+			{
 				AbstractTestSuite.printErrors(result, true);
 				throw new JcResultException(Util.collectErrors(result));
 			}
-			
-		} catch(Throwable e) {
+
+		} catch (Throwable e)
+		{
 			throw new RuntimeException(e);
-		} finally {
-			try {
+		} finally
+		{
+			try
+			{
 				ir.close();
-			} catch (Throwable e) {}
+			} catch (Throwable e)
+			{
+			}
 		}
 	}
 }

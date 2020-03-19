@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014-2016 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,29 +21,39 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class CompoundObjectType {
+public class CompoundObjectType
+{
 
 	public static final String SEPARATOR = ", ";
-	
+
 	private Class<?> type;
 	private CType cType;
 	private CompoundObjectType next;
-	
-	public CompoundObjectType(Class<?> type) {
+
+	public CompoundObjectType(Class<?> type)
+	{
 		super();
 		this.type = type;
 		this.cType = MappingUtil.mapsToProperty(type) ? CType.SIMPLE : CType.COMPLEX;
 	}
-	
+
+	public static boolean isConcrete(Class<?> typ)
+	{
+		return (!typ.isInterface() && !Modifier.isAbstract(typ.getModifiers()) &&
+				!typ.equals(Object.class));
+	}
+
 	/**
 	 * @param typ
 	 * @return true if the type was added to the compound,
 	 * false if the type was already contained in the compound
 	 */
-	public boolean addType(Class<?> typ) {
+	public boolean addType(Class<?> typ)
+	{
 		CompoundObjectType cur = null;
 		Iterator<CompoundObjectType> it = typeIterator();
-		while (it.hasNext()) {
+		while (it.hasNext())
+		{
 			cur = it.next();
 			if (cur.type.equals(typ)) // was already added
 				return false;
@@ -52,43 +62,51 @@ public class CompoundObjectType {
 		cur.next = nextOne;
 		CType t = nextOne.cType;
 		it = typeIterator();
-		while (it.hasNext()) {
+		while (it.hasNext())
+		{
 			cur = it.next();
 			if (cur.cType != t)
 				cur.cType = CType.MIXED;
 		}
 		return true;
 	}
-	
-	public Class<?> getType() {
+
+	public Class<?> getType()
+	{
 		return this.type;
 	}
-	
+
 	/**
 	 * Answer a list of types of this CompoundObjectType.
+	 *
 	 * @param noAbstractTypes if true, no abstract types and no interfaces are answered,
-	 * else all types of the CompoundObjectType are answered.
+	 *                        else all types of the CompoundObjectType are answered.
 	 * @return a list of java Classes
 	 */
-	public List<Class<?>> getTypes(boolean noAbstractTypes) {
+	public List<Class<?>> getTypes(boolean noAbstractTypes)
+	{
 		List<Class<?>> typeList = new ArrayList<Class<?>>();
 		this.addType(typeList, noAbstractTypes);
 		return typeList;
 	}
-	
-	public CType getCType() {
+
+	public CType getCType()
+	{
 		return this.cType;
 	}
-	
-	public Iterator<CompoundObjectType> typeIterator() {
+
+	public Iterator<CompoundObjectType> typeIterator()
+	{
 		return new TypeIterator();
 	}
-	
-	public String getTypeListString() {
+
+	public String getTypeListString()
+	{
 		StringBuilder sb = new StringBuilder();
 		Iterator<CompoundObjectType> it = typeIterator();
 		int idx = 0;
-		while(it.hasNext()) {
+		while (it.hasNext())
+		{
 			if (idx > 0)
 				sb.append(SEPARATOR);
 			sb.append(it.next().type.getName());
@@ -96,36 +114,42 @@ public class CompoundObjectType {
 		}
 		return sb.toString();
 	}
-	
-	private void addType(List<Class<?>> typeList, boolean noAbstractTypes) {
+
+	private void addType(List<Class<?>> typeList, boolean noAbstractTypes)
+	{
 		if (!noAbstractTypes || isConcrete(this.type))
 			typeList.add(this.type);
 		if (this.next != null)
 			next.addType(typeList, noAbstractTypes);
 	}
-	
-	public static boolean isConcrete(Class<?> typ) {
-		return (!typ.isInterface() && !Modifier.isAbstract(typ.getModifiers()) &&
-				!typ.equals(Object.class));
-	}
-	
+
 	/********************************************/
-	public class TypeIterator implements Iterator<CompoundObjectType> {
+	public static enum CType
+	{
+		SIMPLE, COMPLEX, MIXED
+	}
+
+	/********************************************/
+	public class TypeIterator implements Iterator<CompoundObjectType>
+	{
 
 		CompoundObjectType current;
-		
-		TypeIterator() {
+
+		TypeIterator()
+		{
 			super();
 			this.current = CompoundObjectType.this;
 		}
 
 		@Override
-		public boolean hasNext() {
+		public boolean hasNext()
+		{
 			return current != null;
 		}
 
 		@Override
-		public CompoundObjectType next() {
+		public CompoundObjectType next()
+		{
 			CompoundObjectType ctype = this.current;
 			if (ctype != null)
 				this.current = ctype.next;
@@ -134,13 +158,9 @@ public class CompoundObjectType {
 		}
 
 		@Override
-		public void remove() {
+		public void remove()
+		{
 			throw new RuntimeException("operation not supported");
 		}
-	}
-	
-	/********************************************/
-	public static enum CType {
-		SIMPLE, COMPLEX, MIXED
 	}
 }

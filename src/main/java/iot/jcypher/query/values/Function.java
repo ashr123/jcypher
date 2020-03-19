@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,28 +16,33 @@
 
 package iot.jcypher.query.values;
 
-public class Function {
+public class Function
+{
 
 	private String prefix;
 	private String postfix;
 	private Enum<?> type;
-	
-	public Function(String prefix, String postfix, Enum<?> type) {
+
+	public Function(String prefix, String postfix, Enum<?> type)
+	{
 		super();
 		this.prefix = prefix;
 		this.postfix = postfix;
 		this.type = type;
 	}
 
-	String getPrefix() {
+	String getPrefix()
+	{
 		return prefix;
 	}
 
-	String getPostfix() {
+	String getPostfix()
+	{
 		return postfix;
 	}
 
-	Enum<?> getType() {
+	Enum<?> getType()
+	{
 		return type;
 	}
 }

@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2016 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,6 @@
  ************************************************************************/
 
 package test.greg;
-
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-import java.util.Properties;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;
@@ -36,19 +26,60 @@ import iot.jcypher.domainquery.DomainQuery;
 import iot.jcypher.domainquery.DomainQueryResult;
 import iot.jcypher.domainquery.api.DomainObjectMatch;
 import iot.jcypher.query.result.JcError;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Properties;
+
+import static org.junit.Assert.assertTrue;
 
 @Ignore
-public class GregTest {
+public class GregTest
+{
 
 	public static IDBAccess dbAccess;
 	public static String domainName;
 
+	@BeforeClass
+	public static void before()
+	{
+		domainName = "QTEST-DOMAIN";
+		Properties props = new Properties();
+
+		// properties for remote access and for embedded access
+		// (not needed for in memory access)
+		props.setProperty(DBProperties.SERVER_ROOT_URI, "http://localhost:7474");
+		props.setProperty(DBProperties.DATABASE_DIR, "C:/NEO4J_DBS/01");
+
+		dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props);
+		// dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props,
+		// "neo4j", "jcypher");
+
+		List<JcError> errors = dbAccess.clearDatabase();
+		assertTrue(errors.isEmpty());
+	}
+
+	@AfterClass
+	public static void after()
+	{
+		if (dbAccess != null)
+		{
+			dbAccess.close();
+			dbAccess = null;
+		}
+	}
+
 	@Test
-	public void testGregSample() {
+	public void testGregSample()
+	{
 		testGregSample(3);
 	}
 
-	public void testGregSample(int count) {
+	public void testGregSample(int count)
+	{
 		List<JcError> errs;
 		IDomainAccess da = DomainAccessFactory.createDomainAccess(dbAccess, domainName);
 
@@ -94,7 +125,8 @@ public class GregTest {
 		newStat.setMeasuredIn(env);
 		newStat.setMeasuredFor(app);
 
-		if (n2bChained.size() > 0) {
+		if (n2bChained.size() > 0)
+		{
 			BIStats n2bC = n2bChained.get(0);
 			n2bC.setMeasuredFor(null);
 			n2bC.setMeasuredIn(null);
@@ -117,7 +149,8 @@ public class GregTest {
 		return;
 	}
 
-	private void initDomain(IDomainAccess da) {
+	private void initDomain(IDomainAccess da)
+	{
 		Env env = new Env();
 		env.setName("Paradise");
 		App app = new App();
@@ -136,7 +169,8 @@ public class GregTest {
 		// assertTrue(errs.isEmpty());
 	}
 
-	private void conditionallyCreateEnv_App(IDomainAccess da) {
+	private void conditionallyCreateEnv_App(IDomainAccess da)
+	{
 		List<JcError> errs;
 
 		DomainQuery q = da.createQuery();
@@ -149,44 +183,20 @@ public class GregTest {
 		List<App> apps = result.resultOf(appMatch);
 
 		Env env = envs.size() > 0 ? envs.get(0) : null;
-		if (env == null) {
+		if (env == null)
+		{
 			env = new Env();
 			env.setName("Paradise");
 			errs = da.store(env);
 			assertTrue(errs.isEmpty());
 		}
 		App app = apps.size() > 0 ? apps.get(0) : null;
-		if (app == null) {
+		if (app == null)
+		{
 			app = new App();
 			app.setName("ITunes");
 			errs = da.store(app);
 			assertTrue(errs.isEmpty());
-		}
-	}
-
-	@BeforeClass
-	public static void before() {
-		domainName = "QTEST-DOMAIN";
-		Properties props = new Properties();
-
-		// properties for remote access and for embedded access
-		// (not needed for in memory access)
-		props.setProperty(DBProperties.SERVER_ROOT_URI, "http://localhost:7474");
-		props.setProperty(DBProperties.DATABASE_DIR, "C:/NEO4J_DBS/01");
-
-		dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props);
-		// dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props,
-		// "neo4j", "jcypher");
-
-		List<JcError> errors = dbAccess.clearDatabase();
-		assertTrue(errors.isEmpty());
-	}
-
-	@AfterClass
-	public static void after() {
-		if (dbAccess != null) {
-			dbAccess.close();
-			dbAccess = null;
 		}
 	}
 }

@@ -1,12 +1,12 @@
 /************************************************************************
  * Copyright (c) 2014-2015 IoT-Solutions e.U.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,45 +16,54 @@
 
 package test.domainquery.model;
 
-public class EContact implements PointOfContact {
+public class EContact implements PointOfContact
+{
 
 	private EContactType type;
 	private String eAddress;
 	private EArea area;
-	
-	public EContact() {
+
+	public EContact()
+	{
 		super();
 	}
 
-	public EContact(EContactType type, String eAddress) {
+	public EContact(EContactType type, String eAddress)
+	{
 		super();
 		this.type = type;
 		this.eAddress = eAddress;
 	}
 
-	public EContactType getType() {
+	public EContactType getType()
+	{
 		return type;
 	}
 
-	public String geteAddress() {
+	public String geteAddress()
+	{
 		return eAddress;
 	}
 
-	public EArea getArea() {
+	public EArea getArea()
+	{
 		return area;
 	}
 
-	public void setArea(EArea area) {
+	public void setArea(EArea area)
+	{
 		this.area = area;
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "EContact [type=" + type + ", eAddress=" + eAddress + "]";
 	}
 
 	/*******************************/
-	public enum EContactType {
+	public enum EContactType
+	{
 		EMAIL, TELEPHONE
 	}
 }
