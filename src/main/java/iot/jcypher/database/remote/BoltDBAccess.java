@@ -40,7 +40,7 @@ public class BoltDBAccess extends AbstractRemoteDBAccess
 	private static final String pathPrefix = "://";
 	private static final String bolt = "bolt";
 
-	private ThreadLocal<BoltTransactionImpl> transaction = new ThreadLocal<BoltTransactionImpl>();
+	private ThreadLocal<BoltTransactionImpl> transaction = new ThreadLocal<>();
 	private AuthToken authToken;
 	private Driver driver;
 	private Session session;
@@ -74,7 +74,7 @@ public class BoltDBAccess extends AbstractRemoteDBAccess
 	@Override
 	public List<JcQueryResult> execute(List<JcQuery> queries)
 	{
-		List<Statement> statements = new ArrayList<Statement>(queries.size());
+		List<Statement> statements = new ArrayList<>(queries.size());
 		for (JcQuery query : queries)
 		{
 			WriterContext context = new WriterContext();
@@ -93,7 +93,7 @@ public class BoltDBAccess extends AbstractRemoteDBAccess
 			tx = getSession().beginTransaction();
 
 		Throwable dbException = null;
-		List<JcQueryResult> ret = new ArrayList<JcQueryResult>(queries.size());
+		List<JcQueryResult> ret = new ArrayList<>(queries.size());
 		Result result;
 		try
 		{

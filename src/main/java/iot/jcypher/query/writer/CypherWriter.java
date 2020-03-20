@@ -1402,9 +1402,9 @@ public class CypherWriter
 
 		private static void writeParameter(QueryParam param, StringBuilder sb)
 		{
-			sb.append('{');
+			sb.append('$');
 			sb.append(param.getKey());
-			sb.append('}');
+//			sb.append('}');
 		}
 
 		private static void writeParameterSet(QueryParamSet paramSet, WriterContext context)

@@ -77,7 +77,7 @@ public class TransactionTest extends AbstractTestSuite
 		try
 		{
 			queriesStream.close();
-		} catch (IOException e)
+		} catch (IOException ignored)
 		{
 		}
 		queriesStream = null;
@@ -100,7 +100,6 @@ public class TransactionTest extends AbstractTestSuite
 		Population population = new Population();
 		List<Object> domObjects;
 
-		/** 01 ****************************************/
 		ITransaction tx = da.beginTX();
 		domObjects = population.createBerghammerFamily();
 		errors = da.store(domObjects);
@@ -168,7 +167,6 @@ public class TransactionTest extends AbstractTestSuite
 		assertEquals(3, berghammer.size());
 		assertEquals(2, companies.size());
 
-		return;
 	}
 
 	@Test
