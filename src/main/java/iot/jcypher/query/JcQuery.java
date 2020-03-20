@@ -16,7 +16,7 @@
 
 package iot.jcypher.query;
 
-import iot.jcypher.database.internal.PlannerStrategy;
+//import iot.jcypher.database.internal.PlannerStrategy;
 import iot.jcypher.query.api.IClause;
 
 /**
@@ -26,8 +26,8 @@ public class JcQuery
 {
 
 	private boolean extractParams = true;
-	private IClause clauses[];
-	private PlannerStrategy plannerStrategy = null;
+	private IClause[] clauses;
+//	private PlannerStrategy plannerStrategy = PlannerStrategy.DEFAULT;
 
 	/**
 	 * Construct a JQuery object
@@ -37,16 +37,16 @@ public class JcQuery
 		super();
 	}
 
-	/**
-	 * Construct a JQuery object, set the planner strategy
-	 *
-	 * @param plannerStrategy
-	 */
-	public JcQuery(PlannerStrategy plannerStrategy)
-	{
-		super();
-		this.plannerStrategy = plannerStrategy;
-	}
+//	/**
+//	 * Construct a JQuery object, set the planner strategy
+//	 *
+//	 * @param plannerStrategy
+//	 */
+//	public JcQuery(PlannerStrategy plannerStrategy)
+//	{
+//		super();
+//		this.plannerStrategy = plannerStrategy;
+//	}
 
 	/**
 	 * <div color='red' style="font-size:24px;color:red"><b><i><u>JCYPHER</u></i></b></div>
@@ -68,7 +68,7 @@ public class JcQuery
 	 * <br/>});</i></div></i></div>
 	 * <br/>
 	 */
-	public void setClauses(IClause[] clauses)
+	public void setClauses(IClause... clauses)
 	{
 		this.clauses = clauses;
 	}
@@ -99,13 +99,13 @@ public class JcQuery
 		this.extractParams = extractParams;
 	}
 
-	public PlannerStrategy getPlannerStrategy()
-	{
-		return plannerStrategy;
-	}
+//	public PlannerStrategy getPlannerStrategy()
+//	{
+//		return plannerStrategy;
+//	}
 
-	public void setPlannerStrategy(PlannerStrategy plannerStrategy)
-	{
-		this.plannerStrategy = plannerStrategy;
-	}
+//	public void setPlannerStrategy(PlannerStrategy plannerStrategy)
+//	{
+//		this.plannerStrategy = plannerStrategy;
+//	}
 }

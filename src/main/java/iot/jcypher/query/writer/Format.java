@@ -18,6 +18,5 @@ package iot.jcypher.query.writer;
 
 public enum Format
 {
-
 	NONE, PRETTY_1, PRETTY_2, PRETTY_3
 }

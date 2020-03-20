@@ -46,8 +46,7 @@ public class CFactory
 
 		CollectFrom connector = new CollectFrom(collXpr);
 
-		EXProperty<CollectFrom> ret = new EXProperty<CollectFrom>(collXpr, connector);
-		return ret;
+		return new EXProperty<CollectFrom>(collXpr, connector);
 	}
 
 	public static CFrom<CWhere> FILTER()
