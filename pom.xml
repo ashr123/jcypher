@@ -145,7 +145,7 @@
 		<dependency><!-- needed for embedded and in_memory database access -->
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j</artifactId>
-			<version>3.5.2</version>
+			<version>5.26.21</version>
 		</dependency>
 		<dependency><!-- needed for in memory database access -->
 			<groupId>org.neo4j</groupId>
